@@ -1313,7 +1313,9 @@ vendor/etc/init/vendor.samsung.hardware.light@3.0-service.rc
 vendor/etc/init/vendor.samsung.hardware.miscpower@2.0-service.rc
 vendor/etc/init/vendor.samsung.hardware.vibrator@2.0-service.rc
 vendor/etc/init/vendor.samsung.hardware.tlc.ucm@1.0-service.rc
+vendor/etc/init/vendor.samsung.hardware.wifi@2.0-service.rc
 vendor/lib/hw/vendor.samsung.hardware.camera.provider@3.0-impl.so
+vendor/lib/hw/lights.sdm660.so
 vendor/lib/hw/vendor.samsung.hardware.light@3.0-impl.so
 vendor/lib/libDLInterface.camera.samsung.so
 vendor/lib/libOpenCv.camera.samsung.so
@@ -1337,6 +1339,7 @@ vendor/lib/vendor.samsung.hardware.radio.channel@2.0.so
 vendor/lib/vendor.samsung.hardware.radio.bridge@2.0.so
 vendor/lib/vendor.samsung.hardware.radio@2.0.so
 vendor/lib/vendor.samsung.hardware.security.proca@2.0.so
+vendor/lib64/hw/lights.sdm660.so
 vendor/lib64/hw/vendor.samsung.hardware.camera.provider@3.0-impl.so
 vendor/lib64/hw/vendor.samsung.hardware.light@3.0-impl.so
 vendor/lib64/libDLInterface.camera.samsung.so
@@ -1364,6 +1367,7 @@ vendor/lib64/vendor.samsung.hardware.security.proca@2.0.so
 
 # Sensors
 vendor/bin/hw/android.hardware.sensors@1.0-service
+vendor/bin/hw/vendor.samsung.hardware.wifi@2.0-service
 vendor/bin/sensors.qti
 vendor/etc/init/android.hardware.sensors@1.0-service.rc
 vendor/lib/hw/android.hardware.sensors@1.0-impl.so
