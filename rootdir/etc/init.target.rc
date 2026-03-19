@@ -102,6 +102,9 @@ on fs
 
    wait /dev/block/bootdevice/by-name/modem
     mount vfat /dev/block/bootdevice/by-name/modem /vendor/firmware-modem ro context=u:object_r:firmware_file:s0,shortname=lower,uid=0,gid=1000,dmask=227,fmask=337
+
+    wait /dev/block/bootdevice/by-name/msadp
+    symlink /dev/block/bootdevice/by-name/msadp /mnt/vendor/persist/msadp
 	
 	
 
