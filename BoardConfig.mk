@@ -17,6 +17,8 @@
 DEVICE_PATH := device/samsung/a9y18qlte
 BUILD_TOP := $(shell pwd)
 BUILD_BROKEN_DUP_RULES := true
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+TARGET_BOOT_ANIMATION_RES := 1080
 
 # Audio
 AUDIO_FEATURE_ENABLED_AAC_ADTS_OFFLOAD := true
@@ -74,7 +76,6 @@ TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
 
 # Kernel
-BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
 TARGET_KERNEL_ARCH := arm64
 BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 BOARD_BOOT_HEADER_VERSION := 0
@@ -93,13 +94,17 @@ BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize
 # Kernel config
 TARGET_KERNEL_CONFIG := a9y18qlte_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/a9y18qlte
-KERNEL_TOOLCHAIN := $(BUILD_TOP)/prebuilts/gcc/$(HOST_OS)-x86/aarch64/aarch64-linux-android-4.9/bin
+TARGET_KERNEL_VERSION := 4.4
+TARGET_PREBUILT_KERNEL := $(OUT_DIR)/target/product/$(TARGET_DEVICE)/obj/KERNEL_OBJ/arch/arm64/boot/Image.gz-dtb
+KERNEL_TOOLCHAIN := /home/schr-0dinger/toolchain/gcc-4.9/aarch64-linux-android-4.9/bin
+KERNEL_TOOLCHAIN_ARM32 := /home/schr-0dinger/toolchain/gcc-4.9/arm-linux-androideabi-4.9/bin
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
-TARGET_KERNEL_CLANG_COMPILE := false
+TARGET_KERNEL_CROSS_COMPILE_PREFIX_ARM32 := arm-linux-androideabi-
 
 # Partitions
-BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
 BOARD_SUPPRESS_SECURE_ERASE := true
+TARGET_COPY_OUT_PRODUCT := system/product
+TARGET_COPY_OUT_SYSTEM_EXT := system/system_ext
 BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 67129344
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 4756340736
@@ -158,15 +163,18 @@ BOARD_USES_QC_TIME_SERVICES := true
 # Recovery
 BOARD_HAS_DOWNLOAD_MODE := true
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/recovery.fstab
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 
 # Treble
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
+PRODUCT_FULL_TREBLE_OVERRIDE := true
+BOARD_SHIPPING_API_LEVEL := 26
 BOARD_VNDK_VERSION := current
 BOARD_VNDK_RUNTIME_DISABLE := true
 
-# Vendor
+# Vendor / ODM
 TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_ODM := vendor/odm
 
 # Enable 64-bits binder
 TARGET_USES_64_BIT_BINDER := true
@@ -186,7 +194,7 @@ DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/manifest.xml
 DEVICE_MATRIX_FILE := $(DEVICE_PATH)/compatibility_matrix.xml
 
 # Init
-TARGET_INIT_VENDOR_LIB := libinit_a9y18qlte
+TARGET_INIT_VENDOR_LIB := //$(DEVICE_PATH):libinit_a9y18qlte
 TARGET_RECOVERY_DEVICE_MODULES := libinit_a9y18qlte
 
 # Properties
@@ -210,7 +218,7 @@ BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp_policy
 
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
-BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(DEVICE_PATH_PATH)/sepolicy/private
+BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/private
 
 # WiFi
 BOARD_HAVE_SAMSUNG_WIFI := true

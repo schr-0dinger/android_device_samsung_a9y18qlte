@@ -7,23 +7,20 @@ on boot
     chown system radio /sys/class/power_supply/sm5705-charger/charger_op_mode
 
 # Move 2 SD card
-service extSdUFSVold /system/bin/extSDCardServiceVold
-    class main
-    user system
-    group system mount radio net_bt sdcard_rw shell media media_rw
+# Disabled until matching external SD helper is added back.
+# service extSdUFSVold /system/bin/extSDCardServiceVold
+#     class main
+#     user system
+#     group system mount radio net_bt sdcard_rw shell media media_rw
 
 on init
-
-# Disable Bloatwares present in ODM
-	mount none /odm/lost+found /odm/app bind
-	mount none /odm/lost+found /odm/priv-app bind
 
 on fs
 
 # DQMDBG Partition
     mkdir /dqmdbg 0770 system system
     wait /dev/block/bootdevice/by-name/dqmdbg
-    mount ext4 /dev/block/bootdevice/by-name/dqmdbg /dqmdbg nosuid nodev noatime noauto_da_alloc,discard,journal_checksum,data=ordered,errors=panic
+    mount ext4 /dev/block/bootdevice/by-name/dqmdbg /dqmdbg nosuid nodev noatime noauto_da_alloc,discard,journal_checksum,data=ordered,errors=continue
 
     chown system system /dqmdbg
     chmod 0770 /dqmdbg

@@ -15,4 +15,10 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/lineage_a9y18qlte.mk
+    $(LOCAL_DIR)/lineage_a9y18qlte.mk \
+    $(LOCAL_DIR)/qassa_a9y18qlte.mk
+
+COMMON_LUNCH_CHOICES := \
+    qassa_a9y18qlte-user \
+    qassa_a9y18qlte-userdebug \
+    qassa_a9y18qlte-eng

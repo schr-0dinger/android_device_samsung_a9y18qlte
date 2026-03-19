@@ -56,15 +56,20 @@ void property_override_dual(char const system_prop[], char const vendor_prop[],
 void vendor_load_properties()
 {
     // fingerprint
-    property_override("ro.build.description", "a9y18qlte-user 10 QP1A.190711.020 A920FXXS5CUJ4 release-keys");
-    property_override_dual("ro.build.fingerprint", "ro.vendor.build.fingerprint", "google/walleye/walleye:8.1.0/OPM1.171019.011/4448085:user/release-keys");
+    property_override("ro.build.description", "a9y18qltexx-user 10 QP1A.190711.020 A920FXXS7CVI9 release-keys");
+    property_override_dual("ro.build.fingerprint", "ro.vendor.build.fingerprint", "samsung/a9y18qltexx/a9y18qlte:10/QP1A.190711.020/A920FXXS7CVI9:user/release-keys");
 
     // privapp permisison control
-    property_override("ro.control_privapp_permissions", "log");
+    property_override("ro.control_privapp_permissions", "enforce");
 
-    property_override("ro.product.model", "BASIC");
-    property_override("ro.product.system.model", "BASIC");
-    property_override("ro.product.vendor.model", "BASIC");
-    property_override("ro.product.product.model", "BASIC");
-    property_override("ro.product.odm.model", "BASIC");
+    property_override("ro.product.model", "SM-A920F");
+    property_override("ro.product.system.model", "SM-A920F");
+    property_override("ro.product.vendor.model", "SM-A920F");
+    property_override("ro.product.product.model", "SM-A920F");
+    property_override("ro.product.odm.model", "SM-A920F");
+    property_override("ro.product.device", "a9y18qlte");
+    property_override("ro.product.system.device", "a9y18qlte");
+    property_override("ro.product.vendor.device", "a9y18qlte");
+    property_override("ro.product.product.device", "a9y18qlte");
+    property_override("ro.product.odm.device", "a9y18qlte");
 }

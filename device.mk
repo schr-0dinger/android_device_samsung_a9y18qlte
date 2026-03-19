@@ -22,6 +22,8 @@ DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay \
     $(LOCAL_PATH)/overlay-lineage
 
+ENABLE_VENDOR_RIL_SERVICE := true
+
 # Boot animation
 TARGET_SCREEN_HEIGHT := 2220
 TARGET_SCREEN_WIDTH := 1080
@@ -41,7 +43,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.audio@5.0-impl \
     android.hardware.audio.effect@5.0-impl\
-    android.hardware.audio.service \
+    android.hardware.audio@2.0-service \
     audio.a2dp.default \
     audio_amplifier.sdm660 \
     audio.primary.sdm660 \
@@ -68,8 +70,13 @@ PRODUCT_COPY_FILES += \
     
 
 PRODUCT_COPY_FILES += \
+    frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/a2dp_in_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_in_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_configuration.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_default_stream_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_default_stream_volumes.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_product_strategies.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_product_strategies.xml \
+    frameworks/av/services/audiopolicy/enginedefault/config/example/phone/audio_policy_engine_stream_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_engine_stream_volumes.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/hearing_aid_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/hearing_aid_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
@@ -124,6 +131,10 @@ PRODUCT_COPY_FILES += \
 # IRSC
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/sec_config:$(TARGET_COPY_OUT_VENDOR)/etc/sec_config
+
+# Use Havoc-style ODM layout during bring-up.
+# Runtime /odm paths are satisfied via root symlinks into /vendor/odm,
+# which avoids the separate-odm symlink loop seen in earlier builds.
 	
 # Keylayout
 PRODUCT_COPY_FILES += \
@@ -220,6 +231,7 @@ PRODUCT_COPY_FILES += \
 # Ramdisk
 PRODUCT_PACKAGES += \
     fstab.qcom \
+    fstab.qcom_ramdisk \
     init.class_main.sh \
     init.crda.sh \
     init.mdm.sh \
