@@ -745,10 +745,13 @@ vendor/firmware/crnv21.bin
 vendor/firmware/Data.msc
 vendor/firmware/leia_pfp_470.fw
 vendor/firmware/leia_pm4_470.fw
+vendor/firmware/msadp
 vendor/firmware/Tfa9872.cnt
 vendor/firmware/wlan/qca_cld/bdwlan.bin
 vendor/firmware/wlan/qca_cld/grippower.info
 vendor/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini
+vendor/etc/wifi/WCNSS_qcom_cfg.ini
+vendor/etc/hostapd/hostapd_default.conf
 vendor/firmware/wlanmdsp.mbn
 vendor/firmware_mnt/image/a512_zap.b00
 vendor/firmware_mnt/image/a512_zap.b01
@@ -1444,6 +1447,9 @@ vendor/lib64/libhdcpsrm.so
 vendor/bin/cnss-daemon
 vendor/bin/cnss_diag
 vendor/bin/fstman
+vendor/bin/qrtr-ns
+vendor/bin/hostapd_cli
+vendor/bin/wpa_cli
 
 # rootdir
 vendor/bin/adpl

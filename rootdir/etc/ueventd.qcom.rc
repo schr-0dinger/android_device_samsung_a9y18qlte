@@ -28,7 +28,7 @@
 # Firmware directory Path
 # Below macro will be read by uevent and path will
 # be added to search path for firmware loading
-firmware_directories /mnt/vendor/persist/  /vendor/firmware_mnt/image/  /vendor/firmware_mnt/  /vendor/firmware-modem/image/  /vendor/firmware-modem/  /vendor/dsp/  /dsp/  /vendor/firmware/  /firmware/image/  /firmware/
+firmware_directories /vendor/firmware_mnt/image/  /vendor/firmware-modem/image/
 
 # the DIAG device node is not world writable/readable.
 /dev/diag                 0660   system     oem_2901
