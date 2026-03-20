@@ -66,6 +66,8 @@ debug.gralloc.enable_fb_ubwc=1
 
 # Telephony
 ro.telephony.default_network=10,10
+persist.radio.multisim.config=dsds
+ro.vendor.multisim.simslotcount=2
 
 # Samsung specific
 ro.product_ship=true

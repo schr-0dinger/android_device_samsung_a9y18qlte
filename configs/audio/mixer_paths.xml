@@ -1951,8 +1951,8 @@
 
     <path name="headset">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="79" />
-        <ctl name="RX2 Digital Volume" value="79" />
+        <ctl name="RX1 Digital Volume" value="83" />
+        <ctl name="RX2 Digital Volume" value="83" />
     </path>
 
     <path name="asrc-mode">
@@ -1960,8 +1960,8 @@
 
     <path name="headphones-dsd">
         <path name="ear" />
-        <ctl name="RX1 Digital Volume" value="80" />
-        <ctl name="RX2 Digital Volume" value="80" />
+        <ctl name="RX1 Digital Volume" value="84" />
+        <ctl name="RX2 Digital Volume" value="84" />
     </path>
 
     <path name="hph-highquality-mode">
@@ -2284,7 +2284,7 @@
     <path name="call-speaker-mic">
         <path name="sub-main-mic" />
         <ctl name="DEC1 Volume" value="84" />
-        <ctl name="DEC2 Volume" value="75" />
+        <ctl name="DEC2 Volume" value="84" />
     </path>
 
     <path name="call-headphone-mic">
@@ -2364,7 +2364,7 @@
     <path name="wifi-call-speaker-mic">
         <path name="sub-main-mic" />
         <ctl name="DEC1 Volume" value="84" />
-        <ctl name="DEC2 Volume" value="75" />
+        <ctl name="DEC2 Volume" value="84" />
     </path>
 
     <path name="wifi-call-dual-speaker-mic">

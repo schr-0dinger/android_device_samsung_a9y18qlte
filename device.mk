@@ -41,12 +41,8 @@ PRODUCT_PACKAGES += \
 
 # Audio
 PRODUCT_PACKAGES += \
-    android.hardware.audio@5.0-impl \
-    android.hardware.audio.effect@5.0-impl\
-    android.hardware.audio@2.0-service \
     audio.a2dp.default \
     audio_amplifier.sdm660 \
-    audio.primary.sdm660 \
     audio.r_submix.default \
     audio.usb.default \
     libaudio-resampler \

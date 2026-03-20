@@ -45,6 +45,7 @@ vendor/lib64/hw/com.qualcomm.qti.ant@1.0-impl.so
 # Audio
 etc/permissions/audiosphere.xml
 framework/audiosphere.jar
+vendor/bin/hw/android.hardware.audio@2.0-service
 vendor/bin/audioflacapp
 vendor/firmware/dbmd4_va_fw.bin
 vendor/lib/libacdb-fts.so
@@ -61,6 +62,12 @@ vendor/lib/vendor.samsung.hardware.audio@1.0.so
 vendor/lib/libdrc.so
 vendor/lib/libqtigef.so
 vendor/lib/libsurround_3mic_proc.so
+vendor/lib/hw/android.hardware.audio@2.0-impl.so
+vendor/lib/hw/android.hardware.audio@4.0-impl.so
+vendor/lib/hw/android.hardware.audio@5.0-impl.so
+vendor/lib/hw/android.hardware.audio.effect@2.0-impl.so
+vendor/lib/hw/android.hardware.audio.effect@4.0-impl.so
+vendor/lib/hw/android.hardware.audio.effect@5.0-impl.so
 vendor/lib/hw/android.hardware.soundtrigger@2.0-impl.so
 vendor/lib/hw/android.hardware.soundtrigger@2.1-impl.so
 vendor/lib/hw/vendor.samsung.hardware.audio@1.0-impl.so
@@ -73,6 +80,12 @@ vendor/lib64/libaudioalsa.so
 vendor/lib64/libaudioparsers.so
 vendor/lib64/libqtigef.so
 vendor/lib64/vendor.samsung.hardware.audio@1.0.so
+vendor/lib64/hw/android.hardware.audio@2.0-impl.so
+vendor/lib64/hw/android.hardware.audio@4.0-impl.so
+vendor/lib64/hw/android.hardware.audio@5.0-impl.so
+vendor/lib64/hw/android.hardware.audio.effect@2.0-impl.so
+vendor/lib64/hw/android.hardware.audio.effect@4.0-impl.so
+vendor/lib64/hw/android.hardware.audio.effect@5.0-impl.so
 vendor/lib64/hw/vendor.samsung.hardware.audio@1.0-impl.so
 
 vendor/etc/audio_configs.xml
@@ -126,6 +139,7 @@ vendor/etc/audconf/OPEN/Speaker_cal.acdb
 vendor/etc/audconf/OPEN/workspaceFile.qwsp
 
 # Audio-Hardware
+vendor/lib/hw/audio.sec_primary.default.so
 vendor/lib/hw/audio.primary.default.so
 vendor/lib/hw/audio.primary.sdm660.so
 vendor/lib/hw/audio.r_submix.default.so
@@ -136,6 +150,7 @@ vendor/lib/soundfx/libqcomvisualizer.so
 vendor/lib/soundfx/libqcomvoiceprocessing.so
 vendor/lib/soundfx/libvolumelistener.so
 vendor/lib64/libtinycompress.so
+vendor/lib64/hw/audio.sec_primary.default.so
 vendor/lib64/hw/audio.primary.default.so
 vendor/lib64/hw/audio.r_submix.default.so
 vendor/lib64/hw/audio.usb.default.so
@@ -1248,6 +1263,7 @@ vendor/bin/ATFWD-daemon
 vendor/bin/ipacm
 vendor/bin/netmgrd
 vendor/bin/rmt_storage
+vendor/bin/secril_config_svc
 vendor/bin/tftp_server
 vendor/etc/data/dsi_config.xml
 vendor/etc/data/netmgr_config.xml
@@ -1295,9 +1311,30 @@ vendor/lib64/libsystem_health_mon.so
 vendor/lib64/vendor.qti.hardware.radio.atcmdfwd@1.0.so
 
 # Radio-IMS
+bin/imsd
+etc/init/imsd.rc
+etc/permissions/com.qualcomm.qti.imscmservice.xml
+etc/permissions/privapp-permissions-com.sec.ims.xml
+etc/permissions/privapp-permissions-com.sec.imsservice.xml
 -app/ImsSettings/ImsSettings.apk
+-priv-app/ImsTelephonyService/ImsTelephonyService.apk
+-priv-app/imsservice/imsservice.apk
 product/lib/libdiag_system.so
 product/lib64/libdiag_system.so
+product/etc/permissions/com.qualcomm.qti.imscmservice-V2.0-java.xml
+product/etc/permissions/com.qualcomm.qti.imscmservice-V2.1-java.xml
+product/etc/permissions/com.qualcomm.qti.imscmservice-V2.2-java.xml
+product/framework/com.qualcomm.qti.imscmservice-V2.0-java.jar
+product/framework/com.qualcomm.qti.imscmservice-V2.1-java.jar
+product/framework/com.qualcomm.qti.imscmservice-V2.2-java.jar
+product/lib/com.qualcomm.qti.imscmservice@1.0.so
+product/lib/com.qualcomm.qti.imscmservice@2.0.so
+product/lib/com.qualcomm.qti.imscmservice@2.1.so
+product/lib/com.qualcomm.qti.imscmservice@2.2.so
+product/lib64/com.qualcomm.qti.imscmservice@1.0.so
+product/lib64/com.qualcomm.qti.imscmservice@2.0.so
+product/lib64/com.qualcomm.qti.imscmservice@2.1.so
+product/lib64/com.qualcomm.qti.imscmservice@2.2.so
 vendor/lib/com.qualcomm.qti.uceservice@2.0.so
 vendor/lib64/com.qualcomm.qti.uceservice@2.0.so
 
