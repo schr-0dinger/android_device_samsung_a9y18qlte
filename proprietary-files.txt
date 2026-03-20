@@ -1245,11 +1245,17 @@ etc/permissions/qcrilhook.xml
 framework/embmslibrary.jar
 framework/qcrilhook.jar
 vendor/bin/ATFWD-daemon
+vendor/bin/ipacm
 vendor/bin/netmgrd
 vendor/bin/rmt_storage
 vendor/bin/tftp_server
 vendor/etc/data/dsi_config.xml
 vendor/etc/data/netmgr_config.xml
+vendor/etc/init/ipacm-diag.rc
+vendor/etc/init/ipacm.rc
+vendor/etc/init/netmgrd.rc
+vendor/etc/init/vendor.qti.rmt_storage.rc
+vendor/etc/init/vendor.qti.tftp.rc
 vendor/lib/libconfigdb.so
 vendor/lib/libdsi_netctrl.so
 vendor/lib/liblqe.so
@@ -1268,13 +1274,17 @@ vendor/lib/libsystem_health_mon.so
 vendor/lib/vendor.qti.hardware.radio.atcmdfwd@1.0.so
 vendor/lib64/libconfigdb.so
 vendor/lib64/libdsi_netctrl.so
+vendor/lib64/libipanat.so
 vendor/lib64/liblqe.so
 vendor/lib64/libmdmdetect.so
+vendor/lib64/libnetfilter_conntrack.so
 vendor/lib64/libnetmgr.so
 vendor/lib64/libnetmgr_common.so
 vendor/lib64/libnetmgr_nr_fusion.so
 vendor/lib64/libnetmgr_rmnet_ext.so
+vendor/lib64/libnfnetlink.so
 vendor/lib64/libnlnetmgr.so
+vendor/lib64/liboffloadhal.so
 vendor/lib64/liboemaids_vendor.so
 vendor/lib64/libpdmapper.so
 vendor/lib64/libpdnotifier.so
@@ -1450,6 +1460,7 @@ vendor/bin/fstman
 vendor/bin/qrtr-ns
 vendor/bin/hostapd_cli
 vendor/bin/wpa_cli
+vendor/etc/init/vendor.qti.hardware.fstman@1.0-service.rc
 
 # rootdir
 vendor/bin/adpl

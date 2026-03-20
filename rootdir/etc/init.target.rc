@@ -79,6 +79,9 @@ on fs
     mount ext4 /dev/block/bootdevice/by-name/persist /mnt/vendor/persist nosuid nodev noatime noauto_da_alloc,discard,journal_checksum,data=ordered,errors=continue
     restorecon_recursive /mnt/vendor/persist
 	mkdir /mnt/vendor/persist/rfs 0700 system system
+    mkdir /mnt/vendor/persist/hlos_rfs 0771 vendor_rfs vendor_rfs_shared
+    mkdir /mnt/vendor/persist/hlos_rfs/shared 0771 vendor_rfs vendor_rfs_shared
+    restorecon_recursive /mnt/vendor/persist/hlos_rfs
 
     wait /dev/block/bootdevice/by-name/dsp
     mount ext4 /dev/block/bootdevice/by-name/dsp /vendor/dsp nosuid nodev barrier=1
@@ -121,6 +124,7 @@ on post-fs-data
 
 on boot
     start rmt_storage
+    start vendor.tftp_server
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-7
     write /dev/cpuset/foreground/boost/cpus 0-7
