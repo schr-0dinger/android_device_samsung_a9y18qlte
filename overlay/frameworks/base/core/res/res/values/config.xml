@@ -331,7 +331,7 @@
      <string name="config_ethernet_iface_regex">eth\\d</string>
 
     <!-- ImsService package name to bind to by default, if config_dynamic_bind_ims is true -->
-     <string name="config_ims_package">org.codeaurora.ims</string>
+     <string name="config_ims_package">com.sec.imsservice</string>
 
     <!-- MMS user agent string -->
      <string name="config_mms_user_agent">Android-Mms/2.0</string>

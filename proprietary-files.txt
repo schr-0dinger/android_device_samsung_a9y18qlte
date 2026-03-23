@@ -1343,6 +1343,7 @@ lib/libfactoryutil.so
 lib/libmdf.so
 lib/libomission_avoidance.so
 lib/libpacm_client.so
+lib/android.hardware.radio@1.0.so
 lib/libsecaudiocoreutils.so
 lib/libsecaudioeventutils.so
 lib/libsecnativefeature.so
@@ -1350,6 +1351,9 @@ lib/libsecure_storage.so
 lib/libsemnativecarrierfeature.so
 lib/libsecril-client.so
 lib64/libaresdns.so
+lib64/android.hardware.radio@1.0.so
+lib64/libevs_float.so
+lib64/libAudioTranscoder.so
 lib64/libcharon.so
 lib64/libcurl2.so
 lib64/liberis_charon.so
@@ -1360,6 +1364,9 @@ lib64/libfactoryutil.so
 lib64/libmdf.so
 lib64/libomission_avoidance.so
 lib64/libpacm_client.so
+lib64/libmediarelayengine.so
+lib64/libresampler_ims.so
+lib64/libSRTP.so
 lib64/libsec-ims.so
 lib64/libsecaudiocoreutils.so
 lib64/libsecaudioeventutils.so
