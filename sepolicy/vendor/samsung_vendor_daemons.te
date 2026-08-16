@@ -1,0 +1,33 @@
+# Domains for the Samsung /vendor binaries that AOSP has no equivalent for.
+#
+# Each is declared, given an exec type, and wired to init with
+# init_daemon_domain() so exec'ing the binary transitions out of init's domain.
+# Rules beyond that are added from observed denials - deliberately not a blanket
+# allow, since the point of the exercise is to stop these running with init's
+# privileges.
+
+# Samsung PROCA (periodic process/kernel integrity attestation).
+type sec_proca, domain;
+type sec_proca_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(sec_proca)
+
+# Samsung WSM (secure memory manager backing the TEE).
+type sec_wsm, domain;
+type sec_wsm_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(sec_wsm)
+
+# Trustonic Kinibi TEE driver service and its registry. Keystore, gatekeeper
+# and fingerprint all route through this, so it must work before those can.
+type tee_hal, domain;
+type tee_hal_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(tee_hal)
+hal_server_domain(tee_hal, hal_keymaster)
+
+type teeregistry_hal, domain;
+type teeregistry_hal_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(teeregistry_hal)
+
+# ADSP firmware loader.
+type factory_adsp, domain;
+type factory_adsp_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(factory_adsp)

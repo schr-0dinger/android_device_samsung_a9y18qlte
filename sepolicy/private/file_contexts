@@ -14,3 +14,26 @@
 /vendor/bin/hw/android\.hardware\.gatekeeper@1\.0-service u:object_r:hal_gatekeeper_default_exec:s0
 /vendor/bin/hw/android\.hardware\.keymaster@3\.0-service u:object_r:hal_keymaster_default_exec:s0
 /vendor/bin/hw/vendor\.samsung\.hardware\.biometrics\.fingerprint@3\.0-service u:object_r:hal_fingerprint_default_exec:s0
+
+# Samsung ships these HALs under names the stock file_contexts regexes do not
+# match - the AOSP patterns expect android.hardware.<iface>@<ver>-service, not
+# a vendor prefix or a .samsung/.wahoo suffix. Without a matching entry the
+# binary keeps the generic vendor_file label, no type_transition fires, and the
+# service inherits init's domain. That is invisible while permissive, but under
+# enforcing init cannot exec them and they crash-loop, taking camera, NFC and
+# telephony with them. Each maps onto the stock domain for its interface.
+/vendor/bin/hw/vendor\.samsung\.hardware\.camera\.provider@3\.0-service u:object_r:hal_camera_default_exec:s0
+/vendor/bin/hw/nxp\.android\.hardware\.nfc@1\.1-service u:object_r:hal_nfc_default_exec:s0
+/vendor/bin/hw/android\.hardware\.usb@1\.1-service\.wahoo u:object_r:hal_usb_default_exec:s0
+/vendor/bin/hw/android\.hardware\.health@2\.0-service\.samsung u:object_r:hal_health_default_exec:s0
+/vendor/bin/hw/vendor\.samsung\.hardware\.vibrator@2\.0-service u:object_r:hal_vibrator_default_exec:s0
+/vendor/bin/hw/vendor\.samsung\.hardware\.miscpower@2\.0-service u:object_r:hal_power_default_exec:s0
+
+# Samsung daemons on the system partition. See samsung_system_daemons.te.
+/system/bin/imsd          u:object_r:samsung_imsd_exec:s0
+/system/bin/smdexe        u:object_r:smdexe_exec:s0
+/system/bin/connfwexe     u:object_r:connfwexe_exec:s0
+/system/bin/multiclientd  u:object_r:multiclientd_exec:s0
+
+# Extra control socket declared by Samsung's netd.rc. See qosd_socket.te.
+/dev/socket/qosd          u:object_r:qosd_socket:s0

@@ -244,6 +244,10 @@ BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp_policy
 # SELinux
 include device/qcom/sepolicy/sepolicy.mk
 BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/private
+# Domains for the Samsung binaries under /vendor. These must live in vendor
+# policy, not plat_private: declaring a vendor_file_type there trips Treble
+# neverallows.
+BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 
 # WiFi
 BOARD_HAVE_SAMSUNG_WIFI := true

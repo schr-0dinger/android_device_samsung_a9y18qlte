@@ -1,0 +1,13 @@
+# Samsung's netd.rc declares an extra control socket:
+#     socket qosd stream 0660 root radio
+# With no file_contexts entry it lands on the generic socket_device type, which
+# rild is not allowed to write. Under enforcing that shows up as a retry storm
+# rather than a logged denial, because the denial is dontaudit'd:
+#     RILD: [sqos] connectToServer(): Failed to connect to qosd: Permission denied
+type qosd_socket, file_type;
+
+# init creates the socket on netd's behalf before dropping into netd's domain.
+allow init qosd_socket:sock_file { create setattr unlink };
+allow netd qosd_socket:sock_file { create getattr setattr unlink listen accept read write };
+allow rild qosd_socket:sock_file { getattr write connectto };
+allow rild netd:unix_stream_socket connectto;

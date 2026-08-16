@@ -1,0 +1,31 @@
+# Domains for the Samsung binaries that ship under /system/bin.
+#
+# These sit on the system partition, so their types belong in plat_private
+# rather than vendor policy. Same failure as the vendor set: with no exec type
+# there is no type_transition, init runs them itself, and enforcing then refuses
+# the exec outright ("init: cannot execve('/system/bin/smdexe'): Permission
+# denied") leaving them to crash-loop on init's 5 second restart.
+
+# Samsung IMS daemon. VoLTE registration depends on this one - if it does not
+# come up, the stack never gets a usable IMS PDN.
+type samsung_imsd, domain;
+type samsung_imsd_exec, exec_type, file_type, system_file_type;
+init_daemon_domain(samsung_imsd)
+net_domain(samsung_imsd)
+
+# Samsung shared-memory / modem bridge daemon.
+type smdexe, domain;
+type smdexe_exec, exec_type, file_type, system_file_type;
+init_daemon_domain(smdexe)
+
+# Samsung connectivity framework executor.
+type connfwexe, domain;
+type connfwexe_exec, exec_type, file_type, system_file_type;
+init_daemon_domain(connfwexe)
+net_domain(connfwexe)
+
+# Samsung multi-client daemon (runs as two instances).
+type multiclientd, domain;
+type multiclientd_exec, exec_type, file_type, system_file_type;
+init_daemon_domain(multiclientd)
+net_domain(multiclientd)
