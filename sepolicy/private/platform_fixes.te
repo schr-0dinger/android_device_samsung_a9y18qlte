@@ -74,6 +74,11 @@ allow hwservicemanager multiclientd:binder transfer;
 # Typed narrowly rather than granting connfwexe write over system_data_file,
 # which would hand a packet-capture daemon the whole of /data.
 allow connfwexe tcpdump_socket_file:sock_file { create unlink };
+# A file_contexts entry alone is not enough: a newly created file inherits its
+# parent directory type unless a type_transition says otherwise, so connfwexe
+# was still creating the socket as system_data_file. restorecon fixed the
+# existing one; this makes it land correctly at creation.
+type_transition connfwexe system_data_file:sock_file tcpdump_socket_file ".tcpdump_socket";
 allow connfwexe system_data_file:dir { write add_name remove_name };
 get_prop(connfwexe, hwservicemanager_prop)
 
