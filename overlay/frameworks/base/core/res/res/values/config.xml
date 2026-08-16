@@ -340,7 +340,10 @@
      <string name="config_mms_user_agent_profile_url">http://www.google.com/oha/rdf/ua-profile-kila.xml</string>
 
     <!--  Define Google play service package for FRP-->
-     <string name="config_persistentDataPackageName">com.google.android.gms</string>
+    <!-- Empty: this is a Vanilla build with no GMS, so PersistentDataBlockService
+         throws NameNotFoundException looking this package up at every boot.
+         Factory Reset Protection needs GMS and cannot work here regardless. -->
+     <string name="config_persistentDataPackageName"></string>
 
     <!-- Configure wifi tcp buffersizes in the form:
          rmem_min,rmem_def,rmem_max,wmem_min,wmem_def,wmem_max -->
