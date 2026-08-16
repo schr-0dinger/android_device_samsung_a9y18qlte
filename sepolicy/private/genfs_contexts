@@ -23,8 +23,7 @@ genfscon sysfs /devices/soc/soc:i2c@24/i2c-24/24-0071/power_supply u:object_r:sy
 genfscon sysfs /devices/virtual/sec/switch                           u:object_r:sysfs_sec_switch:s0
 
 # Board sysfs init writes at boot. See private/platform_fixes.te.
-genfscon sysfs /kernel/boot_wlan                                     u:object_r:sysfs_wlan_boot:s0
-genfscon sysfs /wifi                                                 u:object_r:sysfs_wlan_boot:s0
+# The wlan bring-up genfscons moved to sepolicy/vendor with their type.
 genfscon sysfs /module/msm_core/parameters                           u:object_r:sysfs_msm_core:s0
 
 # Camera sysfs is labelled in sepolicy/vendor/genfs_contexts instead:

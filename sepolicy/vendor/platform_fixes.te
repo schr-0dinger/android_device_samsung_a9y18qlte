@@ -90,8 +90,39 @@ get_prop(mediacodec, vendor_audio_prop)
 
 # --- Samsung PTA device ------------------------------------------------------
 # /dev/pta, char 10:34, owned system:system, left on the generic device type.
+# The consumer is energyawareness, not init - it only looked like init before,
+# because energyawareness had no domain of its own and ran as init.
 type sec_pta_device, dev_type;
-allow init sec_pta_device:chr_file rw_file_perms;
+allow energyawareness sec_pta_device:chr_file rw_file_perms;
+
+# --- Wi-Fi bring-up sysfs ----------------------------------------------------
+# init flips the bring-up trigger and macloader reads back the MAC and state:
+#   /sys/kernel/boot_wlan/boot_wlan
+#   /sys/wifi/mac_addr, /sys/wifi/qcwlanstate
+# Declared here rather than plat_private because macloader is a vendor domain;
+# init is plat-public so it can still be named from vendor policy.
+type sysfs_wlan_boot, sysfs_type, fs_type;
+allow { init macloader } sysfs_wlan_boot:dir r_dir_perms;
+allow { init macloader } sysfs_wlan_boot:file rw_file_perms;
+
+# macloader caches the read-back Wi-Fi version under /data/vendor/conn.
+# wifi_vendor_data_file already exists in qcom qva vendor policy - the path was
+# simply never labelled on this board.
+allow macloader wifi_vendor_data_file:dir rw_dir_perms;
+allow macloader wifi_vendor_data_file:file create_file_perms;
+
+# --- secril_config -----------------------------------------------------------
+# Reads the carrier property file out of EFS at startup: /efs/telephony.prop
+allow secril_config efs_file:dir search;
+allow secril_config efs_file:file r_file_perms;
+
+# --- qseecomd wrapper --------------------------------------------------------
+get_prop(qseecomd_sh, vendor_tee_listener_prop)
+
+# --- NFC device node ---------------------------------------------------------
+# /dev/pn547 (NXP PN547 controller) is left on the generic device type.
+# nfc_device is already declared in system/sepolicy/public/device.te.
+allow hal_nfc_default nfc_device:chr_file rw_file_perms;
 
 # --- block devices -----------------------------------------------------------
 # Names resolved through /dev/block/by-name.

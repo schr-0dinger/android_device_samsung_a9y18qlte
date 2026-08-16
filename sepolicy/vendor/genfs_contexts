@@ -14,9 +14,17 @@ genfscon sysfs /devices/soc/ca0c000.qcom,cci                  u:object_r:sysfs_c
 genfscon sysfs /kernel/mm/vmscan                              u:object_r:sysfs_vmscan:s0
 
 # Subsystem and UIO device names, enumerated at startup by rmt_storage,
-# thermal, wcnss_service, the sensors HAL and time_daemon.
+# thermal-engine, wcnss_service, the sensors HAL, time_daemon, vendor_pd_mapper
+# and the per_mgr/per_proxy pair. An earlier pass labelled only the two nodes
+# that happened to appear in that boot log; this is every subsys*/name and
+# uio*/name on the board, enumerated from the device.
+genfscon sysfs /devices/soc/0.qcom,rmtfs_sharedmem/uio/uio0   u:object_r:sysfs_subsys:s0
+genfscon sysfs /devices/soc/780000.qcom,msm-core/uio/uio1     u:object_r:sysfs_subsys:s0
 genfscon sysfs /devices/soc/cce0000.qcom,venus/subsys0        u:object_r:sysfs_subsys:s0
-genfscon sysfs /devices/soc/0.qcom,rmtfs_sharedmem/uio        u:object_r:sysfs_subsys:s0
+genfscon sysfs /devices/soc/soc:qcom,kgsl-hyp/subsys1         u:object_r:sysfs_subsys:s0
+genfscon sysfs /devices/soc/15700000.qcom,lpass/subsys2       u:object_r:sysfs_subsys:s0
+genfscon sysfs /devices/soc/1a300000.qcom,turing/subsys3      u:object_r:sysfs_subsys:s0
+genfscon sysfs /devices/soc/4080000.qcom,mss/subsys4          u:object_r:sysfs_subsys:s0
 
 # Samsung sensor nodes, e.g. /sys/devices/virtual/sensors/grip_sensor/name,
 # plus the input device the sensors HAL enumerates alongside them.
@@ -30,3 +38,9 @@ genfscon sysfs /power/volkey_wakeup                           u:object_r:sysfs_v
 # longer prefix to win - genfscon resolves by longest match.
 genfscon sysfs /devices/soc/800f000.qcom,spmi                 u:object_r:sysfs_spmi:s0
 genfscon sysfs /devices/soc/800f000.qcom,spmi/spmi-0/spmi0-00/800f000.qcom,spmi:qcom,pm660@0:qcom,pm660_rtc/rtc u:object_r:sysfs_rtc:s0
+
+# Wi-Fi bring-up nodes, written by init and read back by macloader. Declared in
+# vendor policy because macloader is a vendor domain, so the genfscon has to
+# live here beside the type rather than in plat_private.
+genfscon sysfs /kernel/boot_wlan                              u:object_r:sysfs_wlan_boot:s0
+genfscon sysfs /wifi                                          u:object_r:sysfs_wlan_boot:s0

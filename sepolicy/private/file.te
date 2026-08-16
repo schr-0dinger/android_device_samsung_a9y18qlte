@@ -3,9 +3,8 @@ type sysfs_sec_key, sysfs_type, fs_type;
 # forbids a core domain from touching unlabelled kernel interfaces.
 type sysfs_sec_switch, sysfs_type, fs_type;
 
-# Board sysfs init writes during boot. coredomain.te forbids a core domain from
-# touching unlabelled kernel interfaces, so these need real types.
-type sysfs_wlan_boot, sysfs_type, fs_type;
+# sysfs_wlan_boot moved to sepolicy/vendor: macloader needs it too and is a
+# vendor domain, while init is plat-public and can be named from either side.
 type sysfs_msm_core, sysfs_type, fs_type;
 
 # /dev/block/sda12, by-name "persistent", is the FRP partition. It uses the

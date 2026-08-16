@@ -12,8 +12,8 @@
 #   /sys/kernel/boot_wlan/boot_wlan        Wi-Fi bring-up trigger
 #   /sys/wifi/mac_addr                     MAC address handoff
 #   /sys/module/msm_core/parameters/disabled
-allow init sysfs_wlan_boot:dir search;
-allow init sysfs_wlan_boot:file rw_file_perms;
+# init's wlan sysfs access is granted in sepolicy/vendor alongside macloader's -
+# the type had to move there because macloader is a vendor domain.
 allow init sysfs_msm_core:dir search;
 allow init sysfs_msm_core:file rw_file_perms;
 allow init self:capability sys_module;
