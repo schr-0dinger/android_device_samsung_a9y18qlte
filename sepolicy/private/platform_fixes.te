@@ -77,6 +77,12 @@ allow connfwexe tcpdump_socket_file:sock_file { create unlink };
 allow connfwexe system_data_file:dir { write add_name remove_name };
 get_prop(connfwexe, hwservicemanager_prop)
 
+# connfwexe registers with multiclientd and answers over hwbinder. Both named
+# types are reachable from plat: multiclientd is declared in sepolicy/public and
+# hwservicemanager is a core domain.
+allow connfwexe multiclientd:unix_stream_socket connectto;
+allow hwservicemanager connfwexe:binder transfer;
+
 # --- Samsung system app <-> IMS ----------------------------------------------
 # The Samsung IMS settings app talks to imsd over /dev/socket/imsd and writes
 # the IMS call-recording log. This is on the VoLTE path, not incidental.

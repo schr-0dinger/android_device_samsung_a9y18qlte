@@ -177,3 +177,37 @@ allow qti_init_shell kmsg_device:chr_file { open write };
 # sda3 is by-name "fsc", the modem filesystem cache - same role as modemst1/2,
 # so it reuses that type rather than gaining one of its own.
 allow rmt_storage modem_efs_block_device:blk_file rw_file_perms;
+
+
+##############################################################################
+# Third sweep (35 denials remaining).
+
+# --- macloader --------------------------------------------------------------
+# It opens a UDP socket and drives the Wi-Fi interface through ioctls to write
+# the calibrated MAC, and loads the driver module.
+allow macloader self:udp_socket { create ioctl };
+allow macloader self:capability { net_admin sys_module };
+
+# connfwexe's rules live in sepolicy/private: it is a plat domain (its binary is
+# on /system), so vendor policy cannot name it.
+
+# --- vold -------------------------------------------------------------------
+# Writes the uevent node to re-trigger UFS enumeration. sysfs_ufs is ours, added
+# for hal_perf_default; vold needs the write.
+allow vold sysfs_ufs:file write;
+
+# --- secril_config ----------------------------------------------------------
+# Sets a telephony property at startup, which means talking to the property
+# service socket.
+set_prop(secril_config, vendor_radio_prop)
+
+# --- PMIC brightness --------------------------------------------------------
+# init sets the panel brightness at boot. The node hangs off the SPMI tree, so
+# it picked up sysfs_spmi from the genfscon added earlier.
+#
+# Worth noting: the device tree has had
+#   genfscon sysfs /class/backlight/panel/brightness u:object_r:sysfs_leds:s0
+# since before this work, and it has never taken effect - genfscon matches real
+# device paths and /sys/class is a symlink tree. That node is still generic
+# sysfs today.
+allow init sysfs_spmi:file setattr;

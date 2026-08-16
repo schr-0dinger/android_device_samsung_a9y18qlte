@@ -43,6 +43,8 @@
 /dev/block/sda1                                                     u:object_r:modem_efs_block_device:s0
 /dev/block/sda2                                                     u:object_r:modem_efs_block_device:s0
 /dev/block/sda3                                                     u:object_r:modem_efs_block_device:s0
+# fsg lives on a different disk (sdd), not sda.
+/dev/block/sdd3                                                     u:object_r:modem_efs_block_device:s0
 
 # NXP PN547 NFC controller node.
 /dev/pn547                                                          u:object_r:nfc_device:s0
