@@ -22,7 +22,7 @@ init_daemon_domain(samsung_imsd)
 net_domain(samsung_imsd)
 
 # Samsung shared-memory / modem bridge daemon.
-type smdexe, domain, coredomain;
+# The domain type is declared in sepolicy/public so vendor policy can name it.
 type smdexe_exec, exec_type, file_type, system_file_type;
 init_daemon_domain(smdexe)
 
@@ -33,7 +33,7 @@ init_daemon_domain(connfwexe)
 net_domain(connfwexe)
 
 # Samsung multi-client daemon (runs as two instances).
-type multiclientd, domain, coredomain;
+# The domain type is declared in sepolicy/public so vendor policy can name it.
 type multiclientd_exec, exec_type, file_type, system_file_type;
 init_daemon_domain(multiclientd)
 net_domain(multiclientd)
@@ -45,16 +45,9 @@ net_domain(multiclientd)
 
 # smdexe drives the modem AT channel, watches the USB gadget state, and drops
 # privileges after start.
-# KNOWN GAP: smdexe also opens /dev/at_mdm0, the modem AT channel, which qcom
-# policy types as at_device - a vendor type. smdexe has to be coredomain
-# because its binary sits on /system, and plat policy cannot name vendor types
-# ("unknown type at_device"), so the rule cannot be written on either side.
-#
-# Left denied on purpose. Properly fixing it means declaring the smdexe type in
-# a BOARD_PLAT_PUBLIC_SEPOLICY_DIR so vendor policy can see it, which drags in
-# public-policy versioning and the treble compat tests - not worth that for a
-# handful of startup probes on a daemon nothing else appears to depend on.
-# Revisit if the enforcing test shows modem or USB behaviour regressing.
+# smdexe's access to /dev/at_mdm0 is granted from sepolicy/vendor/rild.te - the
+# node is typed at_device by qcom vendor policy, so the rule has to be written
+# on the vendor side now that the smdexe type is public.
 r_dir_file(smdexe, sysfs_android_usb)
 allow smdexe sysfs_sec_switch:dir search;
 allow smdexe sysfs_sec_switch:file { open read getattr };

@@ -24,3 +24,27 @@ allow rild netd:unix_stream_socket connectto;
 type rild_secradio_data_file, file_type, data_file_type;
 allow rild rild_secradio_data_file:dir create_dir_perms;
 allow rild rild_secradio_data_file:file create_file_perms;
+
+# rild multiplexes its clients through multiclientd and both directions are
+# used. multiclientd is declared in sepolicy/public precisely so this rule can
+# be written - it is coredomain (binary on /system) while rild is vendor, so
+# neither plat nor vendor policy could name both types otherwise.
+binder_call(rild, multiclientd)
+binder_call(multiclientd, rild)
+
+# KNOWN GAP: rild writes /data/misc/radio/{.data_usage_rx,fingerprint}. That is
+# a core data location, and domain.te states the boundary plainly:
+#
+#   "vendor domains may only access files in /data/vendor, never
+#    core_data_file_types"
+#
+# rild is a vendor domain, and radio_data_file carries core_data_file_type, so
+# labelling the directory correctly makes the build fail rather than pass -
+# tried, rejected on domain.te:848 and :878. Samsung's rild writing outside
+# /data/vendor is the actual Treble violation and it is inside a blob we cannot
+# change. Left denied: the casualties are rild's own data-usage counters and a
+# cached modem fingerprint, neither of which the framework reads.
+
+# smdexe drives the modem AT channel. at_device is a qcom vendor type, so this
+# rule belongs here rather than with smdexe's other rules in plat policy.
+allow smdexe at_device:chr_file rw_file_perms;

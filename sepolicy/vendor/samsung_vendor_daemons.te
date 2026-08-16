@@ -39,6 +39,8 @@ init_daemon_domain(factory_adsp)
 
 # PROCA drives the integrity check through the TEE.
 allow sec_proca tee_device:chr_file rw_file_perms;
+allow sec_proca ion_device:chr_file rw_file_perms;
+hwbinder_use(sec_proca)
 
 # WSM and the TEE registry both publish an HIDL service.
 hwbinder_use(sec_wsm)

@@ -31,5 +31,22 @@ r_dir_file(hal_camera_default, sysfs_camera)
 allow hal_camera_default sysfs_camera:file rw_file_perms;
 binder_call(hal_camera_default, surfaceflinger)
 
+# The provider writes the kernel memory-boost knob while streaming. It lives
+# under /sys/kernel, not /sys/devices, so the sysfs_camera genfscon does not
+# reach it and it needs a type of its own.
+type sysfs_vmscan, sysfs_type, fs_type;
+allow hal_camera_default sysfs_vmscan:dir search;
+allow hal_camera_default sysfs_vmscan:file rw_file_perms;
+
 # --- usb --------------------------------------------------------------------
 r_dir_file(hal_usb_default, sysfs_usb_c)
+
+# --- power ------------------------------------------------------------------
+allow hal_power_default sysfs_batteryinfo:dir search;
+
+# --- fingerprint ------------------------------------------------------------
+# Calibration and template data. Generic vendor_data_file otherwise, which the
+# HAL may not write.
+type sec_biometrics_data_file, file_type, data_file_type;
+allow hal_fingerprint_default sec_biometrics_data_file:dir create_dir_perms;
+allow hal_fingerprint_default sec_biometrics_data_file:file create_file_perms;

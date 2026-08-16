@@ -7,3 +7,8 @@
 genfscon sysfs /devices/virtual/camera                        u:object_r:sysfs_camera:s0
 genfscon sysfs /devices/soc/ca00000.qcom,msm-cam/video4linux  u:object_r:sysfs_camera:s0
 genfscon sysfs /devices/soc/caa0000.qcom,jpeg/video4linux     u:object_r:sysfs_camera:s0
+genfscon sysfs /devices/soc/ca0c000.qcom,cci                  u:object_r:sysfs_camera:s0
+
+# Kernel memory-boost knob the camera provider writes while streaming. Under
+# /sys/kernel rather than /sys/devices, so no camera genfscon above covers it.
+genfscon sysfs /kernel/mm/vmscan                              u:object_r:sysfs_vmscan:s0
