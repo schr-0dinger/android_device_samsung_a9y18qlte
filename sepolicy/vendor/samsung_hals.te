@@ -17,6 +17,9 @@ type battery_efs_file, file_type, data_file_type;
 # Factory calibration data. Declared here rather than in plat_private because
 # hal_health_default is a vendor domain and cannot see plat_private types.
 type app_efs_file, file_type, data_file_type;
+
+# IMEI data, read by rild. Same reason it lives here: rild is a vendor domain.
+type imei_efs_file, file_type, data_file_type;
 allow hal_health_default sysfs_batteryinfo:dir search;
 allow hal_health_default sysfs_batteryinfo:file rw_file_perms;
 r_dir_file(hal_health_default, app_efs_file)
@@ -30,6 +33,10 @@ allow hal_health_default battery_efs_file:file { write setattr };
 r_dir_file(hal_camera_default, sysfs_camera)
 allow hal_camera_default sysfs_camera:file rw_file_perms;
 binder_call(hal_camera_default, surfaceflinger)
+# And the return direction: surfaceflinger calls into the provider too, which
+# binder_call() above does not cover - it only grants the callee transfer, not
+# call.
+binder_call(surfaceflinger, hal_camera_default)
 
 # The provider writes the kernel memory-boost knob while streaming. It lives
 # under /sys/kernel, not /sys/devices, so the sysfs_camera genfscon does not

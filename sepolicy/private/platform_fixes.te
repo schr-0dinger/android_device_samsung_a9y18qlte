@@ -1,0 +1,113 @@
+# Core-side counterparts to sepolicy/vendor/platform_fixes.te.
+#
+# Not every denial belongs in here. A large group of them are refusals AOSP
+# intends, and granting them would weaken the thing we are trying to turn on.
+# Those are listed at the bottom as deliberate, with the neverallow that forbids
+# each one. "No remaining denials" is not the goal; "no remaining denials that
+# should have been allowed" is.
+
+# --- init --------------------------------------------------------------------
+# Board sysfs written at boot. coredomain.te forbids a core domain from touching
+# unlabelled kernel interfaces, so each needs a real type:
+#   /sys/kernel/boot_wlan/boot_wlan        Wi-Fi bring-up trigger
+#   /sys/wifi/mac_addr                     MAC address handoff
+#   /sys/module/msm_core/parameters/disabled
+allow init sysfs_wlan_boot:dir search;
+allow init sysfs_wlan_boot:file rw_file_perms;
+allow init sysfs_msm_core:dir search;
+allow init sysfs_msm_core:file rw_file_perms;
+allow init self:capability sys_module;
+allow init proc:file write;                       # /proc/sys/fs/protected_fifos
+allow init efs_file:dir mounton;                  # mounts /efs
+# /dev/pta is granted in sepolicy/vendor - sec_pta_device is a vendor type.
+
+# --- FRP / persistent partition ----------------------------------------------
+# /dev/block/sda12, by-name "persistent", is the factory-reset-protection
+# partition behind PersistentDataBlockService - which is why that service has
+# been logging errors since the first build we looked at.
+#
+# system_server.te is explicit that frp_block_device is the *only* block device
+# system_server may touch, so this uses the stock type. Declaring a device type
+# of our own here would have been rejected, and rightly:
+#   "This helps avoid a system_server to root escalation by writing to raw
+#    block devices."
+allow system_server frp_block_device:blk_file rw_file_perms;
+allow system_server shell:unix_stream_socket getopt;
+# system_server's rtc0/hctosys read is granted in sepolicy/vendor: the RTC sits
+# under the SPMI tree and its genfscon has to live beside that one.
+
+# --- misc partition ----------------------------------------------------------
+allow misc_writer proc_cmdline:file r_file_perms;
+allow misc_writer misc_block_device:blk_file rw_file_perms;   # sda8  misc
+
+# --- other partitions --------------------------------------------------------
+allow fsck userdata_block_device:blk_file rw_file_perms;      # sda29 userdata
+allow kernel sec_debug_block_device:blk_file r_file_perms;    # sda28 debug
+
+# --- vendor_init -------------------------------------------------------------
+# Its persist_file read is granted in sepolicy/vendor - persist_file is a qcom
+# vendor type and plat policy cannot name it.
+allow vendor_init tmpfs:dir { add_name write };
+allow vendor_init rootfs:file { getattr relabelfrom };
+allow vendor_init cgroup:file getattr;
+
+# --- misc core domains -------------------------------------------------------
+allow logpersist cache_file:dir rw_dir_perms;
+allow ueventd self:capability sys_nice;
+allow vold rootfs:dir setattr;
+allow migrate_legacy_obb_data self:capability sys_resource;
+allow adbd shell:unix_stream_socket shutdown;
+allow hwservicemanager multiclientd:binder transfer;
+
+# --- Samsung system app <-> IMS ----------------------------------------------
+# The Samsung IMS settings app talks to imsd over /dev/socket/imsd and writes
+# the IMS call-recording log. This is on the VoLTE path, not incidental.
+#
+# app.te neverallows appdomain writing system_data_file, and says how to do it
+# properly: "Define a different type for portions that should be writable by
+# apps." So /data/log/imscr gets its own type rather than a blanket grant.
+allow system_app samsung_imsd:unix_stream_socket connectto;
+allow system_app multiclientd:unix_stream_socket connectto;
+allow system_app imsd_socket:sock_file write;
+allow system_app ims_log_data_file:dir create_dir_perms;
+allow system_app ims_log_data_file:file create_file_perms;
+allow samsung_imsd ims_log_data_file:dir create_dir_perms;
+allow samsung_imsd ims_log_data_file:file create_file_perms;
+get_prop(system_app, net_dns_prop)
+allow system_app proc_net:file r_file_perms;      # /proc/<pid>/net/if_inet6
+
+
+##############################################################################
+# Denied on purpose. Each of these was tried, rejected by a neverallow, and
+# left denied rather than forced through. The neverallow is the reason.
+#
+#   logpersist -> cache_file:file {create write append}
+#   logpersist -> self:capability dac_override
+#       private/logpersist.te:26 and private/domain.te:275. logpersist is
+#       deliberately confined; dac_override is a privilege-escalation smell and
+#       AOSP gates it behind the dac_override_allowed attribute.
+#       Cost: /cache/boot_log_full.txt is not written.
+#
+#   init-qcom-sensors-sh -> self:capability dac_override
+#   init-qcom-sensors-sh -> system_data_file:dir create
+#   vendor_init -> system_data_file:dir create
+#   vendor_init -> {tombstone,seemp,cache_backup,cache_private_backup}_data_file
+#       public/domain.te:878 and :908 - "vendor domains may only access files in
+#       /data/vendor, never core_data_file_types". Same boundary that blocks
+#       rild from /data/misc/radio. These are vendor components reaching into
+#       core data; the blobs are the violation.
+#
+#   init -> vendor_toolbox_exec:file execute_no_trans
+#       public/init.te:585 - init must not execute anything without a domain
+#       transition. The fix is a domain for toybox_vendor, not an exemption.
+#
+#   qti_init_shell -> {shell,toolbox}_exec:file execute
+#   qti_init_shell -> vendor_file:file entrypoint
+#       public/domain.te:954/1032 - vendor components may not execute /system
+#       files. The qcom init scripts call /system/bin/sh and /system/bin/toolbox
+#       directly instead of the vendor copies; fixing it means changing the
+#       scripts, not the policy.
+#
+#   platform_app -> time_daemon:unix_stream_socket connectto
+#       public/domain.te:724 - app domains may not connect to vendor sockets.
+##############################################################################

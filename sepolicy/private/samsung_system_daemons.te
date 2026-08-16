@@ -43,6 +43,11 @@ net_domain(multiclientd)
 # Rules observed once each daemon actually reached its own domain. None of this
 # was needed while they ran as init, because init already had it all.
 
+# imsd opens a PF_KEY socket. That is the IPsec SA management interface - the
+# IMS stack negotiates SIP signalling security with the P-CSCF over it, so this
+# is on the VoLTE path rather than incidental.
+allow samsung_imsd self:key_socket { create read write };
+
 # smdexe drives the modem AT channel, watches the USB gadget state, and drops
 # privileges after start.
 # smdexe's access to /dev/at_mdm0 is granted from sepolicy/vendor/rild.te - the

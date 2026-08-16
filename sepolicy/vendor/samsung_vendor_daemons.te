@@ -32,6 +32,36 @@ type factory_adsp, domain;
 type factory_adsp_exec, exec_type, file_type, vendor_file_type;
 init_daemon_domain(factory_adsp)
 
+# Oneshot services. These run and exit, so a `ps` sweep never catches them -
+# they only showed up as "init -> vendor_file : file { execute }" denials once
+# the long-lived daemons had been dealt with. qcom ships file_contexts entries
+# for two of them, but only in the sepolicy-legacy-um variant this device does
+# not use, so the types are absent from the built policy and the binaries stay
+# on the generic vendor_file label.
+
+# Samsung Wi-Fi MAC address loader.
+type macloader, domain;
+type macloader_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(macloader)
+
+# Samsung RIL configuration service.
+type secril_config, domain;
+type secril_config_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(secril_config)
+
+# Qualcomm energy awareness daemon.
+type energyawareness, domain;
+type energyawareness_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(energyawareness)
+
+# Shell wrapper init runs to bring up qseecomd. It is a script, so the domain
+# needs to execute the vendor shell it is interpreted by.
+type qseecomd_sh, domain;
+type qseecomd_sh_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(qseecomd_sh)
+allow qseecomd_sh vendor_shell_exec:file rx_file_perms;
+allow qseecomd_sh vendor_toolbox_exec:file rx_file_perms;
+
 
 ##############################################################################
 # Rules observed once each service actually reached its own domain. None of

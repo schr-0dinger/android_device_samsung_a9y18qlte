@@ -2,10 +2,33 @@ type sysfs_sec_key, sysfs_type, fs_type;
 # Samsung USB path switch. smdexe reads usb_sel from here, and coredomain.te
 # forbids a core domain from touching unlabelled kernel interfaces.
 type sysfs_sec_switch, sysfs_type, fs_type;
+
+# Board sysfs init writes during boot. coredomain.te forbids a core domain from
+# touching unlabelled kernel interfaces, so these need real types.
+type sysfs_wlan_boot, sysfs_type, fs_type;
+type sysfs_msm_core, sysfs_type, fs_type;
+
+# /dev/block/sda12, by-name "persistent", is the FRP partition. It uses the
+# stock frp_block_device type - system_server.te neverallows system_server any
+# other block device, so a custom type here would be rejected.
+# /dev/block/sda28, by-name "debug".
+type sec_debug_block_device, dev_type;
+
+# /data/log/imscr - the IMS call-recording log, written by the Samsung IMS app
+# and imsd. app.te neverallows appdomain writing system_data_file and says to
+# "define a different type for portions that should be writable by apps".
+type ims_log_data_file, file_type, data_file_type, core_data_file_type;
+
+# sysfs_rtc lives in sepolicy/vendor: the RTC hangs off the SPMI tree, and its
+# genfscon has to sit next to the SPMI one so the longer prefix wins.
+
+# imsd's control socket, /dev/socket/imsd.
+type imsd_socket, file_type;
 type proc_touchpanel, fs_type;
 type sysfs_lcd_writable, sysfs_type, fs_type;
 type wifi_efs_file, file_type, data_file_type;
-type imei_efs_file, file_type, data_file_type;
+# imei_efs_file moved to sepolicy/vendor/samsung_hals.te alongside
+# app_efs_file: rild reads both and is a vendor domain.
 # app_efs_file moved to sepolicy/vendor/samsung_hals.te: the only domain that
 # needs it is hal_health_default, which is a vendor domain, and vendor policy
 # cannot see types declared in plat_private.

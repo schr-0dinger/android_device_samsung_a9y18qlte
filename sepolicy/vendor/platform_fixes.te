@@ -1,0 +1,108 @@
+# Board-wide gaps found by sweeping all 93 denial groups at once rather than
+# fixing them one report at a time. Every rule is backed by an observed path.
+#
+# Domains here are all vendor-declared (device/qcom/sepolicy/generic/vendor or
+# system/sepolicy/vendor), so their rules cannot live in plat policy.
+
+# --- sysfs subsystem and UIO names -------------------------------------------
+# Ten different domains enumerate these two nodes at startup:
+#   /sys/devices/soc/cce0000.qcom,venus/subsys0/name
+#   /sys/devices/soc/0.qcom,rmtfs_sharedmem/uio/uio0/name
+# Unlabelled they fall to generic sysfs. One type serves every reader.
+type sysfs_subsys, sysfs_type, fs_type;
+allow { rmt_storage thermal-engine wcnss_service hal_sensors_default time_daemon
+        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd }
+      sysfs_subsys:dir search;
+allow { rmt_storage thermal-engine wcnss_service hal_sensors_default time_daemon
+        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd }
+      sysfs_subsys:file r_file_perms;
+
+# --- SPMI / PMIC --------------------------------------------------------------
+# hvdcp walks the SPMI tree, and the RTC hangs off the same controller.
+type sysfs_spmi, sysfs_type, fs_type;
+allow hvdcp sysfs_spmi:dir r_dir_perms;
+allow hvdcp sysfs_spmi:file r_file_perms;
+allow hvdcp sysfs_batteryinfo:dir search;
+
+# The PMIC RTC hangs off that same SPMI tree, so its genfscon has to be more
+# specific than the one above or the broader prefix swallows it. system_server
+# reads rtc0/hctosys to decide whether the clock came from hardware.
+# sysfs_rtc is already declared in system/sepolicy/public/file.te - it is a
+# public type, so it only needed a genfscon, never a declaration.
+allow system_server sysfs_rtc:dir search;
+allow system_server sysfs_rtc:file r_file_perms;
+
+# --- sensors -----------------------------------------------------------------
+# sysfs_sensors is already declared in device/qcom/sepolicy - only the genfscon
+# and these rules were missing. sns.reg is written, not just read.
+allow hal_sensors_default sysfs_sensors:dir r_dir_perms;
+allow hal_sensors_default sysfs_sensors:file r_file_perms;
+r_dir_file(sensors, app_efs_file)
+allow sensors app_efs_file:file { write setattr };
+allow sensors efs_file:dir getattr;
+
+# --- init-qcom-sensors-sh ----------------------------------------------------
+# A qcom vendor domain, despite the name. An earlier pass mis-read it as "init"
+# because the denial parser's character class stopped at the hyphen.
+#
+# Only the harmless parts are granted. Its writes to /data/misc/sensors and its
+# dac_override are both neverallowed - see the note at the end of
+# sepolicy/private/platform_fixes.te.
+allow init-qcom-sensors-sh persist_file:lnk_file r_file_perms;
+allow init-qcom-sensors-sh self:capability chown;
+
+# --- thermal-engine ----------------------------------------------------------
+# Writes cpus_offlined to take cores offline under load, and arms a wake alarm.
+allow thermal-engine sysfs_mpctl:file rw_file_perms;
+allow thermal-engine sysfs_batteryinfo:dir search;
+allow thermal-engine self:capability2 wake_alarm;
+
+# --- qti_init_shell ----------------------------------------------------------
+# Only the sysfs tuning is granted. Its execution of /system/bin/sh and
+# /system/bin/toolbox, and the vendor_file entrypoint, are all neverallowed -
+# see the note at the end of sepolicy/private/platform_fixes.te.
+allow qti_init_shell sysfs_thermal:file rw_file_perms;
+allow qti_init_shell sysfs_devices_system_cpu:file setattr;
+
+# volkey_wakeup lives at /sys/power/volkey_wakeup, not under the sec_key tree -
+# an earlier pass guessed sysfs_sec_key from the node name alone and was wrong.
+# It also could not have worked: sysfs_sec_key is plat-private and used by the
+# kernel domain, so a vendor rule cannot name it.
+type sysfs_volkey, sysfs_type, fs_type;
+allow qti_init_shell sysfs_volkey:file { setattr write };
+
+# --- audio -------------------------------------------------------------------
+allow hal_audio_default sysfs:dir r_dir_perms;
+
+# --- properties --------------------------------------------------------------
+# hwbinder_use() does not cover the property read on this branch, so these need
+# an explicit get_prop.
+get_prop(sec_proca, hwservicemanager_prop)
+get_prop(sec_wsm, hwservicemanager_prop)
+get_prop(teeregistry_hal, hwservicemanager_prop)
+get_prop(mediacodec, vendor_audio_prop)
+# wcnss_service reading wigig_core_prop is left denied. wcnss_service is a
+# vendor domain but wigig_core_prop is declared plat-private in
+# device/qcom/sepolicy/qva/private/property.te, so neither side can name both -
+# the same conflict as smdexe/at_device. Not worth a public declaration: wigig
+# is 60GHz 802.11ad and this board has no such radio, so the read fails
+# harmlessly either way.
+
+# --- Samsung PTA device ------------------------------------------------------
+# /dev/pta, char 10:34, owned system:system, left on the generic device type.
+type sec_pta_device, dev_type;
+allow init sec_pta_device:chr_file rw_file_perms;
+
+# --- block devices -----------------------------------------------------------
+# Names resolved through /dev/block/by-name.
+# ssd_block_device is already declared in
+# device/qcom/sepolicy/generic/vendor/common/device.te - only the sda4 label was
+# missing.
+type modem_efs_block_device, dev_type;   # sda1  modemst1
+allow rmt_storage modem_efs_block_device:blk_file rw_file_perms;
+allow tee ssd_block_device:blk_file rw_file_perms;
+
+# persist_file is a qcom vendor type, so every domain that follows the /persist
+# symlink needs its rule here rather than in plat policy.
+allow tee persist_file:lnk_file r_file_perms;
+allow vendor_init persist_file:lnk_file r_file_perms;

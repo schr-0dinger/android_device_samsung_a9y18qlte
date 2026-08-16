@@ -48,3 +48,19 @@ binder_call(multiclientd, rild)
 # smdexe drives the modem AT channel. at_device is a qcom vendor type, so this
 # rule belongs here rather than with smdexe's other rules in plat policy.
 allow smdexe at_device:chr_file rw_file_perms;
+
+# rild reads the device serial and MPS code out of /efs at startup:
+#   /efs/FactoryApp/serial_no
+#   /efs/imei/mps_code.dat
+# Read-only; it never writes either.
+r_dir_file(rild, app_efs_file)
+r_dir_file(rild, imei_efs_file)
+
+# rild configures the data interface directly through procfs when a PDN comes
+# up - disabling IPv6 autoconf on the raw interface and setting the router
+# solicitation count:
+#   /proc/sys/net/ipv6/conf/*/disable_ipv6
+#   /proc/sys/net/ipv6/conf/*/router_solicitations
+# It also reads its own per-uid traffic counters back out of qtaguid.
+allow rild proc_net:file rw_file_perms;
+allow rild proc_qtaguid_stat:file r_file_perms;

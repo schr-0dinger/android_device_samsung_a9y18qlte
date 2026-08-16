@@ -7,6 +7,12 @@
 /vendor/bin/hw/vendor\.trustonic\.teeregistry@1\.0-service          u:object_r:teeregistry_hal_exec:s0
 /vendor/bin/factory\.adsp                                           u:object_r:factory_adsp_exec:s0
 
+# Oneshot services - see samsung_vendor_daemons.te.
+/vendor/bin/hw/macloader                                            u:object_r:macloader_exec:s0
+/vendor/bin/secril_config_svc                                       u:object_r:secril_config_exec:s0
+/vendor/bin/energy-awareness                                        u:object_r:energyawareness_exec:s0
+/vendor/bin/init\.qti\.qseecomd\.sh                                 u:object_r:qseecomd_sh_exec:s0
+
 # See rild.te. Both of these otherwise fall back to generic types that rild is
 # not permitted to touch.
 /dev/socket/qosd                                                    u:object_r:qosd_socket:s0
@@ -15,15 +21,35 @@
 # Samsung fingerprint sensor node. See samsung_devices.te.
 /dev/esfp0                                                          u:object_r:sec_fingerprint_device:s0
 
+# Graphics allocator passthrough HAL. Mapped into every drawing process, so on
+# the generic vendor_file type it denied six domains at once. See
+# platform_fixes.te.
+/vendor/lib64/hw/gralloc\.sdm660\.so                                u:object_r:same_process_hal_file:s0
+/vendor/lib/hw/gralloc\.sdm660\.so                                  u:object_r:same_process_hal_file:s0
+
+# Samsung PTA character device.
+/dev/pta                                                            u:object_r:sec_pta_device:s0
+
+# Block devices. Nothing labelled these, so every consumer hit the generic
+# block_device type. Names taken from /dev/block/by-name on the device.
+/dev/block/sda1                                                     u:object_r:modem_efs_block_device:s0
+/dev/block/sda8                                                     u:object_r:misc_block_device:s0
+/dev/block/sda29                                                    u:object_r:userdata_block_device:s0
+/dev/block/sda4                                                     u:object_r:ssd_block_device:s0
+
 # Battery calibration data. Matches the xattr the stock firmware already wrote,
 # and covers the files inside the directory, which were never labelled.
 /efs/Battery(/.*)?                                                  u:object_r:battery_efs_file:s0
 /mnt/vendor/efs/Battery(/.*)?                                       u:object_r:battery_efs_file:s0
 
-# Factory calibration data, read by the health HAL. Kept next to the
+# Factory calibration data, read by the health HAL and rild. Kept next to the
 # app_efs_file declaration in samsung_hals.te.
 /efs/FactoryApp(/.*)?                                               u:object_r:app_efs_file:s0
 /mnt/vendor/efs/FactoryApp(/.*)?                                    u:object_r:app_efs_file:s0
+
+# IMEI data, read by rild.
+/efs/imei(/.*)?                                                     u:object_r:imei_efs_file:s0
+/mnt/vendor/efs/imei(/.*)?                                          u:object_r:imei_efs_file:s0
 
 # Fingerprint calibration and template data. See samsung_hals.te.
 /data/vendor/biometrics(/.*)?                                       u:object_r:sec_biometrics_data_file:s0
