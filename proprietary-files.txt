@@ -1690,8 +1690,12 @@ vendor/lib/libsomxwmad.so
 vendor/lib/libsomxwmv7d.so
 vendor/lib/libsomxwmv8d.so
 vendor/lib/libstagefright_bufferqueue_helper_vendor.so
-vendor/lib/vndk/libstagefright_omx_utils.so
-vendor/lib/libstagefright_omx_vendor.so
+# vendor/lib/vndk/libstagefright_omx_utils.so - dropped: stock blob needs Samsung-only
+# MediaDefs symbols (AUDIO_IMA, VIDEO_MP43, WMV1/2/3, WVC1) that the AOSP VNDK extension
+# does not export, so android.hardware.media.omx@1.0-service could not link and
+# crash-looped. AOSP builds libstagefright_omx_utils itself (vendor_available VNDK).
+# vendor/lib/libstagefright_omx_vendor.so - dropped: same missing symbols, and it was
+# never actually packaged (absent from a9y18qlte-vendor.mk and Android.bp).
 vendor/lib/libstagefright_soft_g711dec.so
 vendor/lib/libstagefright_soft_rawdec.so
 vendor/lib/libstagefright_soft_vorbisdec.so
