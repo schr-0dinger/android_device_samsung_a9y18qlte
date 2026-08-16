@@ -135,3 +135,7 @@ allow system_app proc_net:file r_file_perms;      # /proc/<pid>/net/if_inet6
 #   platform_app -> time_daemon:unix_stream_socket connectto
 #       public/domain.te:724 - app domains may not connect to vendor sockets.
 ##############################################################################
+
+# --- from the enforcing trial ------------------------------------------------
+allow platform_app bluetooth_data_file:dir getattr;
+binder_call(bluetooth, gpuservice)

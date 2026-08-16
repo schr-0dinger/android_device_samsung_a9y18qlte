@@ -95,7 +95,13 @@ BOARD_RAMDISK_OFFSET := 0x02000000
 BOARD_KERNEL_SECOND_OFFSET := 0x00F00000
 BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
 BOARD_KERNEL_CMDLINE := console=null androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=1 firmware_class.path=/vendor/firmware_mnt/image
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+# SELinux runs enforcing. It was permissive through bring-up; the device tree
+# policy under sepolicy/ now covers the board, and an enforcing trial exercising
+# camera, calls, settings, NFC, Wi-Fi and the lockscreen produced 3 denial
+# groups and no crashes.
+#
+# To go back to permissive for debugging, re-add:
+#   BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) --second_offset $(BOARD_KERNEL_SECOND_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE)
