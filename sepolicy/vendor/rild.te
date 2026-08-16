@@ -1,0 +1,26 @@
+# rild is a vendor domain (system/sepolicy/vendor/rild.te), so rules naming it
+# have to live in vendor policy - plat_private cannot see the type at all
+# ("ERROR 'unknown type rild'").
+
+# Samsung's netd.rc declares an extra control socket:
+#     socket qosd stream 0660 root radio
+# With no file_contexts entry it lands on the generic socket_device type, which
+# rild may not write. Under enforcing this surfaces as a retry storm rather than
+# a logged denial, because the denial is dontaudit'd:
+#     RILD: [sqos] connectToServer(): Failed to connect to qosd: Permission denied
+#
+# No rule is needed for init or netd. init already holds create/setattr/unlink
+# on any plain file_type sock_file (public/init.te), and netd inherits the
+# descriptor from init rather than opening the path - which is why netd never
+# appeared in the denial log.
+type qosd_socket, file_type;
+allow rild qosd_socket:sock_file { getattr write };
+allow rild netd:unix_stream_socket connectto;
+
+# rild keeps its data-call state in a sqlite database under /data/vendor.
+# The directory has no file_contexts entry, so it inherits the generic
+# vendor_data_file type and every access is refused:
+#   avc: denied { ioctl } path="/data/vendor/secradio/datacallCid.db"
+type rild_secradio_data_file, file_type, data_file_type;
+allow rild rild_secradio_data_file:dir create_dir_perms;
+allow rild rild_secradio_data_file:file create_file_perms;

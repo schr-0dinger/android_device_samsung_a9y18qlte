@@ -6,26 +6,34 @@
 # the exec outright ("init: cannot execve('/system/bin/smdexe'): Permission
 # denied") leaving them to crash-loop on init's 5 second restart.
 
+# Each must be tagged coredomain. Under Treble, a domain that is not a
+# coredomain counts as a vendor component, and domain.te neverallows vendor
+# components from executing - or even reading - anything under /system:
+#   "Do not allow vendor components to execute files from system"   (:954)
+#   "Do not allow vendor components access to /system files"        (:1032)
+# These binaries ship on /system, so without coredomain the policy contradicts
+# itself and the build rejects the entrypoint rule init_daemon_domain() emits.
+
 # Samsung IMS daemon. VoLTE registration depends on this one - if it does not
 # come up, the stack never gets a usable IMS PDN.
-type samsung_imsd, domain;
+type samsung_imsd, domain, coredomain;
 type samsung_imsd_exec, exec_type, file_type, system_file_type;
 init_daemon_domain(samsung_imsd)
 net_domain(samsung_imsd)
 
 # Samsung shared-memory / modem bridge daemon.
-type smdexe, domain;
+type smdexe, domain, coredomain;
 type smdexe_exec, exec_type, file_type, system_file_type;
 init_daemon_domain(smdexe)
 
 # Samsung connectivity framework executor.
-type connfwexe, domain;
+type connfwexe, domain, coredomain;
 type connfwexe_exec, exec_type, file_type, system_file_type;
 init_daemon_domain(connfwexe)
 net_domain(connfwexe)
 
 # Samsung multi-client daemon (runs as two instances).
-type multiclientd, domain;
+type multiclientd, domain, coredomain;
 type multiclientd_exec, exec_type, file_type, system_file_type;
 init_daemon_domain(multiclientd)
 net_domain(multiclientd)

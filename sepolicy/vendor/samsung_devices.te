@@ -1,0 +1,22 @@
+# Device nodes and sysfs paths this board exposes under names the stock policy
+# does not label. Every rule below comes from an observed denial rather than a
+# guess, so the permission sets stay narrow.
+#
+# These live in vendor policy because the domains they name - hal_fingerprint_default
+# and time_daemon - are themselves vendor domains, declared in AOSP's vendor
+# policy and device/qcom/sepolicy respectively. plat_private cannot see them
+# ("ERROR 'unknown type hal_fingerprint_default'").
+
+# Samsung fingerprint sensor. The HAL already runs in hal_fingerprint_default,
+# but its device node sits on the generic "device" type, so the ioctl fails:
+#   avc: denied { ioctl } path="/dev/esfp0" tcontext=u:object_r:device:s0
+type sec_fingerprint_device, dev_type;
+allow hal_fingerprint_default sec_fingerprint_device:chr_file rw_file_perms;
+
+# The fingerprint HAL also talks to QSEE for the secure match.
+allow hal_fingerprint_default tee_device:chr_file rw_file_perms;
+
+# time_daemon polls its own socket and reads a subsystem name out of sysfs:
+#   path="/sys/devices/soc/cce0000.qcom,venus/subsys0/name"
+allow time_daemon self:socket { create read write };
+allow time_daemon sysfs:file r_file_perms;

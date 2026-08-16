@@ -34,6 +34,3 @@
 /system/bin/smdexe        u:object_r:smdexe_exec:s0
 /system/bin/connfwexe     u:object_r:connfwexe_exec:s0
 /system/bin/multiclientd  u:object_r:multiclientd_exec:s0
-
-# Extra control socket declared by Samsung's netd.rc. See qosd_socket.te.
-/dev/socket/qosd          u:object_r:qosd_socket:s0
