@@ -287,22 +287,19 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     init.recovery.qcom.rc
 
-# Samsung CSC / OMC carrier data
+# Samsung CSC / OMC carrier data is deliberately NOT shipped.
 #
-# imsservice.apk parses customer.xml directly (it contains the literal strings
-# "customer.xml", "/odm/omc" and "/system/csc/customer.xml"). Without it the IMS
-# stack falls back to a hardcoded profile with
-# Voice_Domain_Preference_EUTRAN=CSVoiceOnly and EnableVoLTEindicator=FALSE for
-# EVERY carrier, so it never registers for IMS voice - fatal on a VoLTE-only
-# network like Jio, and forced CSFB on BSNL.
+# imsservice.apk parses customer.xml directly and, without it, falls back to a
+# hardcoded profile with Voice_Domain_Preference_EUTRAN=CSVoiceOnly for every
+# carrier - which is why IMS never registers on a bare device.
 #
-# Extracted from stock SM-A920F INS firmware (A920FXXS7CVI9), odm.img,
-# /etc/omc/INS/conf/. Matches this device: omc.info says SAOMC_SM-A920F_ODM_INS
-# and sales_code.dat is INS, matching ro.boot.sales_code.
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/csc/customer.xml:system/csc/customer.xml \
-    $(LOCAL_PATH)/configs/csc/omc.info:system/csc/omc.info \
-    $(LOCAL_PATH)/configs/csc/sales_code.dat:system/csc/sales_code.dat
+# It is not shipped because CSC is region-specific (the SM-A920F INS firmware
+# carries only BNG/INS/NPB/NPL/SLK). Shipping one region would apply, say,
+# Indian carrier settings to a European user. This ROM never flashes the odm
+# partition, so users keep their own factory CSC in /odm/omc/<sales_code>/ and
+# imsservice picks it up via ro.boot.sales_code. Only a device whose odm has
+# been formatted lacks it; the fix for those is a region-neutral default in
+# imsservice, not shipping someone else's carrier data.
 
 # IPA (IP accelerator)
 #
