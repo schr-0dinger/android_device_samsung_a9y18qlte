@@ -1,0 +1,35 @@
+# Rules for the stock HAL domains once the Samsung binaries actually reach
+# them. While these services ran as init they inherited init's privileges and
+# none of this was needed; every rule below comes from a denial observed after
+# the type_transition started working.
+
+# --- health -----------------------------------------------------------------
+# Battery nodes live under the sm5705 charger rather than a stock path, and the
+# calibration data sits in /efs.
+#
+# /efs/Battery already carries a battery_efs_file xattr written by the stock
+# Samsung firmware, but no policy in this tree ever declared that type. The
+# kernel reports an xattr naming an unknown type as "unlabeled", which is why
+# the denial pointed at unlabeled while ls -Z showed battery_efs_file. Declaring
+# it makes the existing label valid rather than relabelling the partition.
+type battery_efs_file, file_type, data_file_type;
+
+# Factory calibration data. Declared here rather than in plat_private because
+# hal_health_default is a vendor domain and cannot see plat_private types.
+type app_efs_file, file_type, data_file_type;
+allow hal_health_default sysfs_batteryinfo:dir search;
+allow hal_health_default sysfs_batteryinfo:file rw_file_perms;
+r_dir_file(hal_health_default, app_efs_file)
+allow hal_health_default app_efs_file:file { write setattr };
+r_dir_file(hal_health_default, battery_efs_file)
+allow hal_health_default battery_efs_file:file { write setattr };
+
+# --- camera -----------------------------------------------------------------
+# Flash, firmware version and the v4l2 device names are all read out of sysfs,
+# and the provider writes the kernel's memory-boost knob while streaming.
+r_dir_file(hal_camera_default, sysfs_camera)
+allow hal_camera_default sysfs_camera:file rw_file_perms;
+binder_call(hal_camera_default, surfaceflinger)
+
+# --- usb --------------------------------------------------------------------
+r_dir_file(hal_usb_default, sysfs_usb_c)

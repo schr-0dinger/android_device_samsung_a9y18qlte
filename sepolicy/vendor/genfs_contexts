@@ -1,0 +1,9 @@
+# sysfs_camera is declared in device/qcom/sepolicy (vendor), so these have to
+# live in vendor policy - plat cannot name the type.
+#
+# The camera provider reads flash and firmware-version nodes plus the v4l2
+# device names while enumerating sensors at startup. Without labels these fall
+# back to generic sysfs, which hal_camera_default is not permitted to touch.
+genfscon sysfs /devices/virtual/camera                        u:object_r:sysfs_camera:s0
+genfscon sysfs /devices/soc/ca00000.qcom,msm-cam/video4linux  u:object_r:sysfs_camera:s0
+genfscon sysfs /devices/soc/caa0000.qcom,jpeg/video4linux     u:object_r:sysfs_camera:s0

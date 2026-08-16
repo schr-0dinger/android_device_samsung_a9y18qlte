@@ -11,3 +11,13 @@ genfscon sysfs /devices/virtual/sec/sec_key                                     
 # battery nodes:
 #   avc: denied { read } path="/sys/devices/battery/power_supply/battery/present"
 genfscon sysfs /devices/battery/power_supply                         u:object_r:sysfs_batteryinfo:s0
+# The charger's own power_supply tree, which is where the health HAL actually
+# reads from - the path above only covers what healthd touches.
+genfscon sysfs /devices/soc/soc:i2c@26/i2c-26/26-0049/sm5705-charger/power_supply u:object_r:sysfs_batteryinfo:s0
+
+# Camera: flash and firmware nodes, plus the v4l2 device names the provider
+# enumerates at startup.
+genfscon sysfs /devices/virtual/sec/switch                           u:object_r:sysfs_sec_switch:s0
+
+# Camera sysfs is labelled in sepolicy/vendor/genfs_contexts instead:
+# sysfs_camera is a qcom vendor type and plat policy cannot name it.

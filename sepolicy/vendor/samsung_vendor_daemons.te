@@ -31,3 +31,28 @@ init_daemon_domain(teeregistry_hal)
 type factory_adsp, domain;
 type factory_adsp_exec, exec_type, file_type, vendor_file_type;
 init_daemon_domain(factory_adsp)
+
+
+##############################################################################
+# Rules observed once each service actually reached its own domain. None of
+# this was needed while they ran as init, because init already had it all.
+
+# PROCA drives the integrity check through the TEE.
+allow sec_proca tee_device:chr_file rw_file_perms;
+
+# WSM and the TEE registry both publish an HIDL service.
+hwbinder_use(sec_wsm)
+hwbinder_use(teeregistry_hal)
+hwbinder_use(tee_hal)
+allow tee_hal tee_device:chr_file rw_file_perms;
+allow teeregistry_hal tee_device:chr_file rw_file_perms;
+
+# The ADSP loader reads sensor calibration out of /persist and opens a local
+# socket pair to talk to the DSP.
+r_dir_file(factory_adsp, persist_sensors_file)
+allow factory_adsp mnt_vendor_file:dir getattr;
+allow factory_adsp sysfs:file r_file_perms;
+allow factory_adsp self:socket { create read write };
+allow factory_adsp self:netlink_socket { create bind read write };
+allow factory_adsp self:tcp_socket { create bind listen accept read write };
+allow factory_adsp node:tcp_socket node_bind;

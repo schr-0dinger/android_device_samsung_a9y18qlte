@@ -7,8 +7,8 @@
 /mnt/vendor/efs/wifi(/.*)?         u:object_r:wifi_efs_file:s0
 /efs/imei(/.*)?                    u:object_r:imei_efs_file:s0
 /mnt/vendor/efs/imei(/.*)?         u:object_r:imei_efs_file:s0
-/efs/FactoryApp(/.*)?              u:object_r:app_efs_file:s0
-/mnt/vendor/efs/FactoryApp(/.*)?   u:object_r:app_efs_file:s0
+# /efs/FactoryApp labels moved to sepolicy/vendor/file_contexts alongside the
+# app_efs_file type declaration.
 /vendor/bin/hw/vendor\.samsung\.hardware\.wifi@2\.0-service u:object_r:hal_wifi_default_exec:s0
 /vendor/bin/hw/vendor\.samsung\.hardware\.light@3\.0-service u:object_r:hal_light_default_exec:s0
 /vendor/bin/hw/android\.hardware\.gatekeeper@1\.0-service u:object_r:hal_gatekeeper_default_exec:s0

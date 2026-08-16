@@ -14,3 +14,13 @@
 
 # Samsung fingerprint sensor node. See samsung_devices.te.
 /dev/esfp0                                                          u:object_r:sec_fingerprint_device:s0
+
+# Battery calibration data. Matches the xattr the stock firmware already wrote,
+# and covers the files inside the directory, which were never labelled.
+/efs/Battery(/.*)?                                                  u:object_r:battery_efs_file:s0
+/mnt/vendor/efs/Battery(/.*)?                                       u:object_r:battery_efs_file:s0
+
+# Factory calibration data, read by the health HAL. Kept next to the
+# app_efs_file declaration in samsung_hals.te.
+/efs/FactoryApp(/.*)?                                               u:object_r:app_efs_file:s0
+/mnt/vendor/efs/FactoryApp(/.*)?                                    u:object_r:app_efs_file:s0

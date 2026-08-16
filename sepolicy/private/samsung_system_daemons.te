@@ -37,3 +37,39 @@ type multiclientd, domain, coredomain;
 type multiclientd_exec, exec_type, file_type, system_file_type;
 init_daemon_domain(multiclientd)
 net_domain(multiclientd)
+
+
+##############################################################################
+# Rules observed once each daemon actually reached its own domain. None of this
+# was needed while they ran as init, because init already had it all.
+
+# smdexe drives the modem AT channel, watches the USB gadget state, and drops
+# privileges after start.
+# KNOWN GAP: smdexe also opens /dev/at_mdm0, the modem AT channel, which qcom
+# policy types as at_device - a vendor type. smdexe has to be coredomain
+# because its binary sits on /system, and plat policy cannot name vendor types
+# ("unknown type at_device"), so the rule cannot be written on either side.
+#
+# Left denied on purpose. Properly fixing it means declaring the smdexe type in
+# a BOARD_PLAT_PUBLIC_SEPOLICY_DIR so vendor policy can see it, which drags in
+# public-policy versioning and the treble compat tests - not worth that for a
+# handful of startup probes on a daemon nothing else appears to depend on.
+# Revisit if the enforcing test shows modem or USB behaviour regressing.
+r_dir_file(smdexe, sysfs_android_usb)
+allow smdexe sysfs_sec_switch:dir search;
+allow smdexe sysfs_sec_switch:file { open read getattr };
+allow smdexe self:capability setuid;
+
+# connfwexe holds a wakelock over system_suspend and also drops privileges.
+binder_call(connfwexe, system_suspend)
+allow connfwexe self:capability setuid;
+
+# multiclientd inspects peer processes and reads hwservicemanager properties.
+# Deliberately narrow: r_file_perms would pull in ioctl and lock, which
+# property.te and domain.te both neverallow, and granting those across the
+# whole domain attribute would be far broader than reading /proc/<pid>/cmdline
+# needs.
+get_prop(multiclientd, hwservicemanager_prop)
+r_dir_file(multiclientd, system_app)
+allow multiclientd domain:dir search;
+allow multiclientd domain:file { open read getattr };

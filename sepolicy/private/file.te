@@ -1,6 +1,11 @@
 type sysfs_sec_key, sysfs_type, fs_type;
+# Samsung USB path switch. smdexe reads usb_sel from here, and coredomain.te
+# forbids a core domain from touching unlabelled kernel interfaces.
+type sysfs_sec_switch, sysfs_type, fs_type;
 type proc_touchpanel, fs_type;
 type sysfs_lcd_writable, sysfs_type, fs_type;
 type wifi_efs_file, file_type, data_file_type;
 type imei_efs_file, file_type, data_file_type;
-type app_efs_file, file_type, data_file_type;
+# app_efs_file moved to sepolicy/vendor/samsung_hals.te: the only domain that
+# needs it is hal_health_default, which is a vendor domain, and vendor policy
+# cannot see types declared in plat_private.
