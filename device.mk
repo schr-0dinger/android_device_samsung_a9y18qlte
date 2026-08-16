@@ -287,6 +287,23 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     init.recovery.qcom.rc
 
+# Samsung CSC / OMC carrier data
+#
+# imsservice.apk parses customer.xml directly (it contains the literal strings
+# "customer.xml", "/odm/omc" and "/system/csc/customer.xml"). Without it the IMS
+# stack falls back to a hardcoded profile with
+# Voice_Domain_Preference_EUTRAN=CSVoiceOnly and EnableVoLTEindicator=FALSE for
+# EVERY carrier, so it never registers for IMS voice - fatal on a VoLTE-only
+# network like Jio, and forced CSFB on BSNL.
+#
+# Extracted from stock SM-A920F INS firmware (A920FXXS7CVI9), odm.img,
+# /etc/omc/INS/conf/. Matches this device: omc.info says SAOMC_SM-A920F_ODM_INS
+# and sales_code.dat is INS, matching ro.boot.sales_code.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/csc/customer.xml:system/csc/customer.xml \
+    $(LOCAL_PATH)/configs/csc/omc.info:system/csc/omc.info \
+    $(LOCAL_PATH)/configs/csc/sales_code.dat:system/csc/sales_code.dat
+
 # IPA (IP accelerator)
 #
 # /vendor/bin/ipacm is extracted as a blob and ipacm.rc ships, but the stock
