@@ -295,11 +295,22 @@ PRODUCT_PACKAGES += \
 #
 # It is not shipped because CSC is region-specific (the SM-A920F INS firmware
 # carries only BNG/INS/NPB/NPL/SLK). Shipping one region would apply, say,
-# Indian carrier settings to a European user. This ROM never flashes the odm
-# partition, so users keep their own factory CSC in /odm/omc/<sales_code>/ and
-# imsservice picks it up via ro.boot.sales_code. Only a device whose odm has
-# been formatted lacks it; the fix for those is a region-neutral default in
-# imsservice, not shipping someone else's carrier data.
+# Indian carrier settings to a European user.
+#
+# Note: this ROM does not mount the odm partition at all - /odm is just symlinks
+# into /vendor/odm - so a user's factory CSC is NOT reachable either. The
+# region-neutral fix is a sane default inside imsservice; mounting the real odm
+# partition so each user gets their own /odm/omc/<sales_code>/ would be the
+# proper long-term answer.
+#
+# configs/csc/ is gitignored, so a public clone has no files here and ships
+# nothing. Drop the extracted files in locally to enable it for your own device.
+ifneq ($(wildcard $(LOCAL_PATH)/configs/csc/customer.xml),)
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/csc/customer.xml:system/csc/customer.xml \
+    $(LOCAL_PATH)/configs/csc/omc.info:system/csc/omc.info \
+    $(LOCAL_PATH)/configs/csc/sales_code.dat:system/csc/sales_code.dat
+endif
 
 # IPA (IP accelerator)
 #
