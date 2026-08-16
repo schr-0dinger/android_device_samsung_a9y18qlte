@@ -20,6 +20,10 @@
 # There is no metadata partition on this board, so this is FBE only - metadata
 # encryption is not available.
 #
+# Verified working: ro.crypto.state=encrypted, ro.crypto.type=file, with VoLTE
+# re-registering from a freshly formatted partition. Tested in permissive - the
+# enforcing bootloop this was first blamed for was caused by enforcing alone.
+#
 # NOTE: /data must be formatted when this is first applied. Existing plaintext
 # files cannot be encrypted in place.
 /dev/block/bootdevice/by-name/userdata	/data	ext4	noatime,nosuid,nodev,noauto_da_alloc,discard,journal_checksum,data=ordered,errors=continue	wait,check,quota,reservedsize=128M,fileencryption=ice
