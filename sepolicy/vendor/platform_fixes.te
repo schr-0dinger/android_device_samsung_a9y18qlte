@@ -242,8 +242,3 @@ allow init sysfs_spmi:file setattr;
 typeattribute tee data_between_core_and_vendor_violators;
 allow tee gatekeeper_data_file:dir rw_dir_perms;
 allow tee gatekeeper_data_file:file create_file_perms;
-
-# --- from the enforcing trial ------------------------------------------------
-# The health HAL reads /efs/Battery, but nothing granted search on the /efs root
-# itself, so every traversal was refused - 28 denials in one session.
-allow hal_health_default efs_file:dir search;
