@@ -90,10 +90,6 @@ on post-fs-data
     chown audioserver system /data/firmware
 	
 #SystemFramework
-    chown system system /data/cache/backup
-    chmod 0711 /data/cache/backup
-    chown system system /data/cache/backup_stage
-    chmod 0711 /data/cache/backup_stage
 
 #Bluetooth
     # for BT MAC address

@@ -37,8 +37,16 @@ start_sensors()
         mkdir -p /persist/sensors/registry/registry
         chown -h system.root /persist/sensors/sensors_settings
 
-        mkdir -p /data/misc/sensors
-        chmod -h 775 /data/misc/sensors
+        # /data/misc/sensors is not created here any more. A scan of every
+        # binary and library under /vendor and /system found this script to be
+        # the only thing in the image that references the path - nothing reads
+        # it, and on a running device the directory was empty.
+        #
+        # It also cannot be made to work: /data/misc is core data, and Treble
+        # neverallows a vendor domain (which this script runs as,
+        # init-qcom-sensors-sh) from touching core_data_file_type. Labelling it
+        # sensors_data_file does not help either - that type carries
+        # core_data_file_type too.
 
         start vendor.sensors.qti
         start factory_adsp

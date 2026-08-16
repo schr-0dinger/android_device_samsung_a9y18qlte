@@ -88,10 +88,6 @@ on post-fs-data
     chown audioserver system /data/firmware
 	
 #SystemFramework
-    chown system system /data/cache/backup
-    chmod 0711 /data/cache/backup
-    chown system system /data/cache/backup_stage
-    chmod 0711 /data/cache/backup_stage
     
 # Samsung Pay
     mkdir /efs/pfw_data 0760 spay spay    

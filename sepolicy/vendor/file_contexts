@@ -7,6 +7,14 @@
 /vendor/bin/hw/vendor\.trustonic\.teeregistry@1\.0-service          u:object_r:teeregistry_hal_exec:s0
 /vendor/bin/factory\.adsp                                           u:object_r:factory_adsp_exec:s0
 
+# qcom labels every other init.*.sh as qti_init_shell_exec but omits this one,
+# which is why it showed up as "qti_init_shell -> vendor_file : entrypoint".
+# Its shebang also pointed at /system/bin/sh; that is fixed in
+# rootdir/bin/init.qti.can.sh, since vendor components may not execute /system
+# files. (The script itself is inert here - it configures a CAN bus and only
+# acts when ro.hardware.type is "automotive".)
+/vendor/bin/init\.qti\.can\.sh                                      u:object_r:qti_init_shell_exec:s0
+
 # Oneshot services - see samsung_vendor_daemons.te.
 /vendor/bin/hw/macloader                                            u:object_r:macloader_exec:s0
 /vendor/bin/secril_config_svc                                       u:object_r:secril_config_exec:s0

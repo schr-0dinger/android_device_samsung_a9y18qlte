@@ -52,7 +52,12 @@ allow vendor_init rootfs:file { getattr relabelfrom };
 allow vendor_init cgroup:file getattr;
 
 # --- misc core domains -------------------------------------------------------
-allow logpersist cache_file:dir rw_dir_perms;
+# logpersist needs no rule from us. Once the boot_log services write
+# /data/misc/logd instead of /cache, stock policy already covers it:
+# private/logpersist.te grants misc_logd_file inside userdebug_or_eng(), and the
+# matching neverallow carves logpersist out on the same condition. Adding an
+# unconditional allow here is worse than redundant - it applies on user builds
+# too, where the carve-out does not exist, so it fails the neverallow.
 allow ueventd self:capability sys_nice;
 allow vold rootfs:dir setattr;
 allow migrate_legacy_obb_data self:capability sys_resource;
@@ -81,32 +86,27 @@ allow system_app proc_net:file r_file_perms;      # /proc/<pid>/net/if_inet6
 # Denied on purpose. Each of these was tried, rejected by a neverallow, and
 # left denied rather than forced through. The neverallow is the reason.
 #
-#   logpersist -> cache_file:file {create write append}
 #   logpersist -> self:capability dac_override
-#       private/logpersist.te:26 and private/domain.te:275. logpersist is
-#       deliberately confined; dac_override is a privilege-escalation smell and
+#       private/domain.te:275. dac_override is a privilege-escalation smell and
 #       AOSP gates it behind the dac_override_allowed attribute.
-#       Cost: /cache/boot_log_full.txt is not written.
+#       (The cache_file writes it used to need are gone: the three boot_log
+#       services in init.samsung.rc now write /data/misc/logd, which logpersist
+#       owns, instead of /cache.)
 #
 #   init-qcom-sensors-sh -> self:capability dac_override
-#   init-qcom-sensors-sh -> system_data_file:dir create
-#   vendor_init -> system_data_file:dir create
-#   vendor_init -> {tombstone,seemp,cache_backup,cache_private_backup}_data_file
+#   vendor_init -> {tombstone,seemp}_data_file
 #       public/domain.te:878 and :908 - "vendor domains may only access files in
-#       /data/vendor, never core_data_file_types". Same boundary that blocks
-#       rild from /data/misc/radio. These are vendor components reaching into
-#       core data; the blobs are the violation.
+#       /data/vendor, never core_data_file_types". These are vendor components
+#       reaching into core data; the blobs are the violation.
 #
 #   init -> vendor_toolbox_exec:file execute_no_trans
 #       public/init.te:585 - init must not execute anything without a domain
 #       transition. The fix is a domain for toybox_vendor, not an exemption.
 #
-#   qti_init_shell -> {shell,toolbox}_exec:file execute
-#   qti_init_shell -> vendor_file:file entrypoint
-#       public/domain.te:954/1032 - vendor components may not execute /system
-#       files. The qcom init scripts call /system/bin/sh and /system/bin/toolbox
-#       directly instead of the vendor copies; fixing it means changing the
-#       scripts, not the policy.
+#   (qti_init_shell's /system/bin/sh execution and its vendor_file entrypoint
+#   were in this list. Both are fixed at source instead: init.qti.can.sh now
+#   uses #!/vendor/bin/sh, and it has a qti_init_shell_exec label that qcom's
+#   file_contexts omitted.)
 #
 #   platform_app -> time_daemon:unix_stream_socket connectto
 #       public/domain.te:724 - app domains may not connect to vendor sockets.
