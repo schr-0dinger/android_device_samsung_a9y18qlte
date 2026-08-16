@@ -287,6 +287,18 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     init.recovery.qcom.rc
 
+# Media
+#
+# libstagefright_omx (and the omx@1.0 service) are built with
+# -D__ANDROID_VNDK_EXT__, so they reference the Qualcomm VNDK-extension mime
+# types MEDIA_MIMETYPE_VIDEO_DIVX4 / _DIVX311. Those live only in the VNDK
+# extension library, which nothing was pulling into the build - so the vendor
+# partition got Samsung's stock libstagefright_foundation.so instead, which
+# exports only DIVX/DIVX3. Result: the omx service failed to link and
+# crash-looped every 5s, breaking all media playback and video recording.
+PRODUCT_PACKAGES += \
+    libstagefright_foundation_ext
+
 # Camera app (replaces Aperture, see TARGET_APERTURE_OPTOUT in qassa_a9y18qlte.mk)
 PRODUCT_PACKAGES += \
     Snap

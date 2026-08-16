@@ -1081,7 +1081,10 @@ vendor/lib/libOmxG711Dec.so
 vendor/lib/libOmxQcelp13Dec.so
 vendor/lib/libOmxVpp.so
 vendor/lib/libOmxWmaDec.so
-vendor/lib/vndk/libstagefright_foundation.so
+# vendor/lib/vndk/libstagefright_foundation.so - dropped: stock blob exports only
+# DIVX/DIVX3, but source-built libstagefright_omx.so is compiled with
+# -D__ANDROID_VNDK_EXT__ and needs DIVX4/DIVX311. Built libstagefright_foundation_ext
+# supplies them instead (see device.mk).
 vendor/lib/libstagefright_soft_ac4dec.so
 vendor/lib/libstagefright_soft_ddpdec.so
 vendor/lib/libstagefright_soft_qtiflacdec.so
