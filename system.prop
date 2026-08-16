@@ -21,6 +21,22 @@ ro.vendor.qti.va_aosp.support=1
 vendor.sec.rild.libpath=/vendor/lib64/libsec-ril.so
 vendor.sec.rild.libpath2=/vendor/lib64/libsec-ril-dsds.so
 
+# VoLTE / VT
+#
+# ImsManager.isVolteEnabledByPlatform() requires config_device_volte_available
+# (set true in our framework overlay) AND the carrier config key
+# KEY_CARRIER_VOLTE_AVAILABLE_BOOL. AOSP's CarrierConfig ships no entry for
+# BSNL (MCC/MNC 40472) - dumpsys shows carrier_config_version_string empty and
+# carrier_volte_available_bool=false - so the check fails even though the
+# network advertises VoPS support (LteVopsSupportInfo mVopsSupport=1) and the
+# Samsung ImsService reports MmTel Voice: true.
+#
+# These properties short-circuit that check in ImsManager (see
+# frameworks/opt/net/ims/.../ImsManager.java, PROPERTY_DBG_VOLTE_AVAIL_OVERRIDE).
+# Drop vt_avail_ovr if video calling misbehaves; VoLTE only needs the first.
+persist.dbg.volte_avail_ovr=1
+persist.dbg.vt_avail_ovr=1
+
 # Debugging
 ro.adb.secure=0
 persist.service.adb.enable=1

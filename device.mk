@@ -22,6 +22,16 @@ DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay \
     $(LOCAL_PATH)/overlay-lineage
 
+# Dalvik heap
+#
+# The tree previously inherited no dalvik-heap config at all, so the device
+# booted with zero dalvik.vm.heap* properties and ART fell back to its built-in
+# defaults - a ~16MB growth limit. com.sec.imsservice died with
+# java.lang.OutOfMemoryError roughly every 9 seconds, which stopped IMS from
+# ever completing SIP registration (and would starve any other memory-hungry
+# app). SM-A920F reports MemTotal ~5.6GB, so use the 6GB profile.
+$(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
+
 ENABLE_VENDOR_RIL_SERVICE := true
 
 # Boot animation
@@ -153,10 +163,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/gpio_keys.kl:$(TARGET_COPY_OUT_SYSTEM)/usr/keylayout/gpio_keys.kl
 
-# Lineage Trust HAL
-PRODUCT_PACKAGES += \
-    vendor.lineage.trust@1.0-service
-
 # Media
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
@@ -281,10 +287,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     init.recovery.qcom.rc
 
-# SamsungDoze
-PRODUCT_PACKAGES += \
-    SamsungDoze
-
 # Seccomp
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/seccomp_policy/configstore@1.1.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/configstore@1.1.policy \
@@ -314,6 +316,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/qti_whitelist.xml:system/etc/sysconfig/qti_whitelist.xml \
     $(LOCAL_PATH)/configs/init/netd.rc:system/etc/init/netd.rc \
     $(LOCAL_PATH)/configs/privapp-permissions-com.sec.imsservice.xml:system/etc/permissions/privapp-permissions-com.sec.imsservice.xml \
+    $(LOCAL_PATH)/configs/privapp-permissions-hotword.xml:system/etc/permissions/privapp-permissions-hotword.xml \
     $(LOCAL_PATH)/configs/privapp-permissions-qti.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/privapp-permissions-qti.xml
 
 # Wifi
