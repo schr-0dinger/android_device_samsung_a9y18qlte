@@ -211,3 +211,34 @@ set_prop(secril_config, vendor_radio_prop)
 # device paths and /sys/class is a symlink tree. That node is still generic
 # sysfs today.
 allow init sysfs_spmi:file setattr;
+
+# --- gatekeeper credential storage -------------------------------------------
+# qseecomd (u:r:tee:s0) writes the enrolled credential blob itself rather than
+# leaving it to gatekeeperd, so it needs /data/misc/gatekeeper:
+#   avc: denied { add_name } for name="gatekeeper.100000"
+#        scontext=u:r:tee:s0 tcontext=u:object_r:gatekeeper_data_file:s0
+#
+# Without this the enrol succeeds only because we are permissive - under
+# enforcing the blob write fails and no lock credential can be stored.
+# qseecomd (u:r:tee:s0) stores the enrolled credential blob itself rather than
+# leaving it to gatekeeperd:
+#   avc: denied { add_name } for name="gatekeeper.100000"
+#        scontext=u:r:tee:s0 tcontext=u:object_r:gatekeeper_data_file:s0
+#
+# This is not optional. Tested under enforcing without it: set-pattern fails and
+# even an already-enrolled credential stops verifying, so the lockscreen is
+# unusable.
+#
+# A plain allow is rejected - domain.te:848/:878, "vendor domains may only
+# access files in /data/vendor, never core_data_file_types". But that neverallow
+# carves out an attribute for exactly this case:
+#     -data_between_core_and_vendor_violators # TODO(b/34980020)
+# which is AOSP's sanctioned list for vendor code that reaches into core data.
+# qcom already puts hal_drm_default on it in device/qcom/sepolicy.
+#
+# Narrow on purpose: the neverallow already exempts
+# ~{ append getattr ioctl read write map }, so only the dir operations and file
+# creation actually need the attribute.
+typeattribute tee data_between_core_and_vendor_violators;
+allow tee gatekeeper_data_file:dir rw_dir_perms;
+allow tee gatekeeper_data_file:file create_file_perms;
