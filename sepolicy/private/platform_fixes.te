@@ -14,8 +14,8 @@
 #   /sys/module/msm_core/parameters/disabled
 # init's wlan sysfs access is granted in sepolicy/vendor alongside macloader's -
 # the type had to move there because macloader is a vendor domain.
-allow init sysfs_msm_core:dir search;
-allow init sysfs_msm_core:file rw_file_perms;
+# init's msm_core writes are granted in sepolicy/vendor alongside
+# energyawareness's - the type had to move there.
 allow init self:capability sys_module;
 allow init proc:file write;                       # /proc/sys/fs/protected_fifos
 allow init efs_file:dir mounton;                  # mounts /efs
@@ -42,6 +42,7 @@ allow misc_writer misc_block_device:blk_file rw_file_perms;   # sda8  misc
 
 # --- other partitions --------------------------------------------------------
 allow fsck userdata_block_device:blk_file rw_file_perms;      # sda29 userdata
+allow fsck cache_block_device:blk_file rw_file_perms;         # sda25 cache
 allow kernel sec_debug_block_device:blk_file r_file_perms;    # sda28 debug
 
 # --- vendor_init -------------------------------------------------------------
@@ -63,6 +64,18 @@ allow vold rootfs:dir setattr;
 allow migrate_legacy_obb_data self:capability sys_resource;
 allow adbd shell:unix_stream_socket shutdown;
 allow hwservicemanager multiclientd:binder transfer;
+
+# --- connfwexe ---------------------------------------------------------------
+# Samsung's connectivity daemon. It publishes a control socket at
+# /data/.tcpdump_socket and, when told to, captures packets to /data/log/tcpdump.
+# Capture is dormant on this device (no pcap dir, no properties set) but the
+# socket is created every boot as system:system 0771.
+#
+# Typed narrowly rather than granting connfwexe write over system_data_file,
+# which would hand a packet-capture daemon the whole of /data.
+allow connfwexe tcpdump_socket_file:sock_file { create unlink };
+allow connfwexe system_data_file:dir { write add_name remove_name };
+get_prop(connfwexe, hwservicemanager_prop)
 
 # --- Samsung system app <-> IMS ----------------------------------------------
 # The Samsung IMS settings app talks to imsd over /dev/socket/imsd and writes

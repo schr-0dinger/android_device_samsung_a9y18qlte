@@ -24,7 +24,7 @@ genfscon sysfs /devices/virtual/sec/switch                           u:object_r:
 
 # Board sysfs init writes at boot. See private/platform_fixes.te.
 # The wlan bring-up genfscons moved to sepolicy/vendor with their type.
-genfscon sysfs /module/msm_core/parameters                           u:object_r:sysfs_msm_core:s0
+# The msm_core genfscon moved to sepolicy/vendor with its type.
 
 # Camera sysfs is labelled in sepolicy/vendor/genfs_contexts instead:
 # sysfs_camera is a qcom vendor type and plat policy cannot name it.

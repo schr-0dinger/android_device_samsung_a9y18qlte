@@ -11,10 +11,12 @@
 # Unlabelled they fall to generic sysfs. One type serves every reader.
 type sysfs_subsys, sysfs_type, fs_type;
 allow { rmt_storage thermal-engine wcnss_service hal_sensors_default time_daemon
-        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd }
+        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd
+        factory_adsp }
       sysfs_subsys:dir search;
 allow { rmt_storage thermal-engine wcnss_service hal_sensors_default time_daemon
-        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd }
+        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd
+        factory_adsp }
       sysfs_subsys:file r_file_perms;
 
 # --- SPMI / PMIC --------------------------------------------------------------
@@ -137,3 +139,41 @@ allow tee ssd_block_device:blk_file rw_file_perms;
 # symlink needs its rule here rather than in plat policy.
 allow tee persist_file:lnk_file r_file_perms;
 allow vendor_init persist_file:lnk_file r_file_perms;
+
+
+##############################################################################
+# Second sweep, from the live-pushed policy (78 denials remaining).
+
+# --- msm_core --------------------------------------------------------------
+# /sys/module/msm_core/parameters/disabled. init flips it at boot and
+# energyawareness writes it later, so the type lives here: energyawareness is a
+# vendor domain, and init is plat-public so it can still be named from vendor.
+type sysfs_msm_core, sysfs_type, fs_type;
+allow { init energyawareness } sysfs_msm_core:dir search;
+allow { init energyawareness } sysfs_msm_core:file rw_file_perms;
+
+# --- Wi-Fi EFS -------------------------------------------------------------
+# macloader reads the calibrated MAC out of /efs/wifi. Moved out of plat_private
+# for the same reason app_efs_file and imei_efs_file were: the consumer is a
+# vendor domain.
+type wifi_efs_file, file_type, data_file_type;
+r_dir_file(macloader, wifi_efs_file)
+allow macloader wifi_efs_file:dir write;
+allow macloader wifi_efs_file:file create_file_perms;
+
+# --- UFS host controller ---------------------------------------------------
+# hal_perf_default reads /sys/devices/soc/1da4000.ufshc/clkscale_enable to see
+# whether storage clock scaling is on before tuning.
+type sysfs_ufs, sysfs_type, fs_type;
+allow hal_perf_default sysfs_ufs:dir search;
+allow hal_perf_default sysfs_ufs:file r_file_perms;
+
+# --- kernel log ------------------------------------------------------------
+# The qcom init scripts echo progress into /dev/kmsg. kmsg_device is plat-public
+# so it can be named from here.
+allow qti_init_shell kmsg_device:chr_file { open write };
+
+# --- more block devices ----------------------------------------------------
+# sda3 is by-name "fsc", the modem filesystem cache - same role as modemst1/2,
+# so it reuses that type rather than gaining one of its own.
+allow rmt_storage modem_efs_block_device:blk_file rw_file_perms;

@@ -29,7 +29,11 @@ genfscon sysfs /devices/soc/4080000.qcom,mss/subsys4          u:object_r:sysfs_s
 # Samsung sensor nodes, e.g. /sys/devices/virtual/sensors/grip_sensor/name,
 # plus the input device the sensors HAL enumerates alongside them.
 genfscon sysfs /devices/virtual/sensors                       u:object_r:sysfs_sensors:s0
-genfscon sysfs /devices/virtual/input/input3                  u:object_r:sysfs_sensors:s0
+# The sensors HAL walks every input device reading its name, so label the
+# whole directory rather than chasing individual input numbers - input1 is
+# meta_event, input3 is grip_sensor, and more appear as drivers load. Nothing
+# else on this board reads /sys/devices/virtual/input.
+genfscon sysfs /devices/virtual/input                         u:object_r:sysfs_sensors:s0
 
 # Samsung wake-on-volume-key toggle, written by the qcom init shell.
 genfscon sysfs /power/volkey_wakeup                           u:object_r:sysfs_volkey:s0
@@ -44,3 +48,9 @@ genfscon sysfs /devices/soc/800f000.qcom,spmi/spmi-0/spmi0-00/800f000.qcom,spmi:
 # live here beside the type rather than in plat_private.
 genfscon sysfs /kernel/boot_wlan                              u:object_r:sysfs_wlan_boot:s0
 genfscon sysfs /wifi                                          u:object_r:sysfs_wlan_boot:s0
+
+# UFS host controller, read by hal_perf_default.
+genfscon sysfs /devices/soc/1da4000.ufshc                     u:object_r:sysfs_ufs:s0
+
+# msm_core parameters, written by init and energyawareness.
+genfscon sysfs /module/msm_core/parameters                     u:object_r:sysfs_msm_core:s0
