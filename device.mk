@@ -287,6 +287,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     init.recovery.qcom.rc
 
+# Camera app (replaces Aperture, see TARGET_APERTURE_OPTOUT in qassa_a9y18qlte.mk)
+PRODUCT_PACKAGES += \
+    Snap
+
 # Seccomp
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/seccomp_policy/configstore@1.1.policy:$(TARGET_COPY_OUT_VENDOR)/etc/seccomp_policy/configstore@1.1.policy \
