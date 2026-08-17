@@ -19,9 +19,10 @@ cc_library_static {
     recovery_available: true,
     srcs: ["init_a9y18qlte.cpp"],
     // libbase moved out of system/core to system/libbase in Android 12, so the
-    // old "system/core/base/include" path no longer exists. Depend on the
-    // header library instead of hardcoding a path - it follows the code if it
-    // moves again.
+    // old "system/core/base/include" path no longer exists.  Headers are enough:
+    // this file writes properties through __system_property_* and no longer
+    // includes init's property_service.h, so it never reaches
+    // android-base/result.h and its <fmt/chrono.h> dependency.
     header_libs: [
         "libbase_headers",
     ],
