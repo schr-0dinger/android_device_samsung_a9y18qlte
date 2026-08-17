@@ -9,13 +9,18 @@
 #   /sys/devices/soc/cce0000.qcom,venus/subsys0/name
 #   /sys/devices/soc/0.qcom,rmtfs_sharedmem/uio/uio0/name
 # Unlabelled they fall to generic sysfs. One type serves every reader.
+#
+# vendor_per_proxy was in this set on A10 and is not here now: LineageOS 19.1
+# declares it only in device/qcom/sepolicy_vndr, which this device does not
+# include, and the daemon is not in proprietary-files.txt either - so it does
+# not exist on this build in any sense.
 type sysfs_subsys, sysfs_type, fs_type;
 allow { rmt_storage thermal-engine wcnss_service hal_sensors_default time_daemon
-        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd
+        vendor_pd_mapper vendor_per_mgr sensors atfwd
         factory_adsp }
       sysfs_subsys:dir search;
 allow { rmt_storage thermal-engine wcnss_service hal_sensors_default time_daemon
-        vendor_pd_mapper vendor_per_mgr vendor_per_proxy sensors atfwd
+        vendor_pd_mapper vendor_per_mgr sensors atfwd
         factory_adsp }
       sysfs_subsys:file r_file_perms;
 
@@ -94,8 +99,8 @@ get_prop(mediacodec, vendor_audio_prop)
 # /dev/pta, char 10:34, owned system:system, left on the generic device type.
 # The consumer is energyawareness, not init - it only looked like init before,
 # because energyawareness had no domain of its own and ran as init.
-type sec_pta_device, dev_type;
-allow energyawareness sec_pta_device:chr_file rw_file_perms;
+# sec_pta_device removed: upstream labels /dev/pta as pta_device and grants
+# energyawareness access to it in legacy/vendor/common/energyawareness.te.
 
 # --- Wi-Fi bring-up sysfs ----------------------------------------------------
 # init flips the bring-up trigger and macloader reads back the MAC and state:

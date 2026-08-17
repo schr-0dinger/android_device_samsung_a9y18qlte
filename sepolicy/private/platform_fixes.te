@@ -37,8 +37,14 @@ allow system_server shell:unix_stream_socket getopt;
 # under the SPMI tree and its genfscon has to live beside that one.
 
 # --- misc partition ----------------------------------------------------------
-allow misc_writer proc_cmdline:file r_file_perms;
-allow misc_writer misc_block_device:blk_file rw_file_perms;   # sda8  misc
+# Nothing needed here on A12.  The domain was renamed misc_writer ->
+# vendor_misc_writer, and system/sepolicy/public/vendor_misc_writer.te already
+# grants misc_block_device:blk_file w_file_perms.
+#
+# The proc_cmdline read this used to allow is *dontaudit* upstream, i.e. AOSP
+# expects it to be denied and merely silences the log.  Re-granting it would
+# contradict that on purpose, so it stays out; if something genuinely breaks,
+# re-derive the rule from an observed denial rather than restoring this one.
 
 # --- other partitions --------------------------------------------------------
 allow fsck userdata_block_device:blk_file rw_file_perms;      # sda29 userdata
@@ -102,7 +108,14 @@ allow system_app ims_log_data_file:dir create_dir_perms;
 allow system_app ims_log_data_file:file create_file_perms;
 allow samsung_imsd ims_log_data_file:dir create_dir_perms;
 allow samsung_imsd ims_log_data_file:file create_file_perms;
-get_prop(system_app, net_dns_prop)
+# get_prop(system_app, net_dns_prop) was here for the Samsung IMS app on A10.
+# Android 12 neverallows it - system/sepolicy/private/domain.te:406 permits only
+# dumpstate/init/system_server/vendor_init, and the comment above it reads "This
+# property is being removed. Remove remaining access." So this is not a scoping
+# problem to work around; net.dns is going away.
+#
+# IMS is deferred on this ROM anyway. If the app turns out to need DNS state,
+# the supported route is the connectivity APIs, not the property.
 allow system_app proc_net:file r_file_perms;      # /proc/<pid>/net/if_inet6
 
 

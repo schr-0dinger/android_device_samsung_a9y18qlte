@@ -49,10 +49,14 @@ type secril_config, domain;
 type secril_config_exec, exec_type, file_type, vendor_file_type;
 init_daemon_domain(secril_config)
 
-# Qualcomm energy awareness daemon.
-type energyawareness, domain;
-type energyawareness_exec, exec_type, file_type, vendor_file_type;
-init_daemon_domain(energyawareness)
+# Qualcomm energy awareness daemon: declared by qcom, not here.
+#
+# Under QASSA (A10) device/qcom/sepolicy-legacy-um/legacy was not part of the
+# build for sdm660, so this tree had to declare the domain itself and the
+# duplicate-type checker never fired.  LineageOS 19.1 includes the legacy tree
+# via device/qcom/sepolicy-legacy-um/SEPolicy.mk, so
+# legacy/vendor/common/energyawareness.te now provides the types *and*
+# init_daemon_domain - redeclaring them here is a hard build error.
 
 # Shell wrapper init runs to bring up qseecomd. It is a script, so the domain
 # needs to execute the vendor shell it is interpreted by.
@@ -65,13 +69,13 @@ allow qseecomd_sh vendor_toolbox_exec:file rx_file_perms;
 # Samsung's qseecomd announces readiness with vendor.sys.qseecomd.enable, which
 # qcom's property_contexts does not name. See sepolicy/vendor/property_contexts
 # for why an untyped property here hangs init at late-fs forever.
-type vendor_qseecomd_prop, property_type;
+vendor_internal_prop(vendor_qseecomd_prop)
 set_prop(tee, vendor_qseecomd_prop)
 
-type samsung_bluetooth_prop, property_type;
+vendor_internal_prop(samsung_bluetooth_prop)
 set_prop(hal_bluetooth_default, samsung_bluetooth_prop)
 
-type samsung_ril_prop, property_type;
+vendor_internal_prop(samsung_ril_prop)
 set_prop(rild, samsung_ril_prop)
 
 

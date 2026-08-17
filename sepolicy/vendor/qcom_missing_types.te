@@ -1,0 +1,48 @@
+# Types QASSA's qcom sepolicy declared and LineageOS 19.1's does not.
+#
+# On Android 10 this tree included device/qcom/sepolicy, a QASSA-carried fork
+# that declared these. LineageOS 19.1 ships device/qcom/sepolicy-legacy-um
+# instead, and none of them survive in it - checkpolicy reports each as
+# "unknown type" one build at a time.
+#
+# They are all device-shaped rather than framework-shaped (sysfs nodes, a block
+# device, a /persist directory), so declaring them here is the right home: they
+# describe this hardware, not a platform contract.
+#
+# Attributes follow the qcom convention still visible in
+# device/qcom/sepolicy-legacy-um (`type sysfs_emmc_dload, sysfs_type, fs_type;`)
+# and system/sepolicy's persist_file (`file_type, vendor_persist_type`).
+
+# Camera sysfs nodes: flash, firmware version and the v4l2 device names.
+# Labelled by genfs_contexts in both sepolicy/private and sepolicy/vendor, so
+# this declaration is load-bearing - without it those genfscon lines cannot
+# resolve.
+type sysfs_camera, sysfs_type, fs_type;
+
+# Qualcomm mpctl / perf tunables under /sys/devices/system/cpu.
+type sysfs_mpctl, sysfs_type, fs_type;
+
+# USB Type-C port state, read by the USB HAL.  Android 12 has its own
+# sysfs_usb_controller, but that labels a different path and is not a drop-in
+# rename, so keep the device-specific type.
+type sysfs_usb_c, sysfs_type, fs_type;
+
+# Samsung's SSD block device, labelled in sepolicy/vendor/file_contexts.
+type ssd_block_device, dev_type;
+
+# Sensor calibration under /persist/sensors.
+type persist_sensors_file, file_type, vendor_persist_type;
+
+# The qcom sensors init script. This device ships it from its own tree
+# (rootdir/Android.mk builds init.qcom.sensors.sh into /vendor/bin), but QASSA's
+# qcom policy supplied the domain and the label; LineageOS 19.1's does not.
+#
+# The hyphen in the name is qcom's, and it has bitten this tree twice: a
+# character class of [a-zA-Z0-9_]+ silently truncates it to "init", which once
+# sent a rule to the wrong domain entirely. See the note in
+# sepolicy/vendor/platform_fixes.te.
+type init-qcom-sensors-sh, domain;
+type init-qcom-sensors-sh_exec, exec_type, file_type, vendor_file_type;
+init_daemon_domain(init-qcom-sensors-sh)
+allow init-qcom-sensors-sh vendor_shell_exec:file rx_file_perms;
+allow init-qcom-sensors-sh vendor_toolbox_exec:file rx_file_perms;

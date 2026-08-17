@@ -34,7 +34,6 @@ type samsung_wsm_hwservice, hwservice_manager_type;
 type trustonic_tee_hwservice, hwservice_manager_type;
 type trustonic_teeregistry_hwservice, hwservice_manager_type;
 type nxp_nfc_hwservice, hwservice_manager_type;
-type lineage_touch_hwservice, hwservice_manager_type;
 
 # --- registration -----------------------------------------------------------
 # add_hwservice() grants { add find } on the service plus add on
@@ -60,7 +59,7 @@ add_hwservice(teeregistry_hal, trustonic_teeregistry_hwservice)
 allow multiclientd samsung_radio_hwservice:hwservice_manager find;
 
 # The LineageOS framework probes the touch HAL from system_server on boot.
-allow system_server lineage_touch_hwservice:hwservice_manager find;
+# system_server's lookup of the lineage touch HAL is covered upstream.
 
 # The Samsung camera provider queries the framework display interface for panel
 # geometry before configuring its streams.
