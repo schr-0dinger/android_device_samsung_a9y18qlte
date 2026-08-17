@@ -211,11 +211,16 @@ BOARD_SHIPPING_API_LEVEL := 26
 # is what this device relied on: it reports ro.vndk.lite=true because Samsung
 # shipped a relaxed vendor interface rather than full Treble.
 #
-# The replacement is a frozen VNDK snapshot. The vendor blobs are Android 10
-# binaries expecting VNDK 29, so pin that rather than 'current' (which on 19.1
-# means 31 and would ask A10 blobs to link against A12 VNDK libraries).
-# LineageOS 19.1 ships prebuilts/vndk/{v28,v29,v30,v31}, so v29 is available.
-BOARD_VNDK_VERSION := 29
+# Must stay 'current'.  Pinning a number (e.g. 29) tells soong to build the
+# vendor partition against a frozen *vendor snapshot* - prebuilt vendor modules -
+# which is a different artifact from the VNDK snapshot in prebuilts/vndk/v29.
+# LineageOS ships the latter but not the former, so a numeric value fails with
+# `depends on undefined module "vendor_snapshot"` for every vendor module built
+# from source, and this tree builds its HALs from source.
+#
+# The A10 blobs' need for VNDK 29 libraries is a runtime linker-namespace
+# question, handled by what gets installed and by ld.config - not by this.
+BOARD_VNDK_VERSION := current
 
 # Vendor / ODM
 TARGET_COPY_OUT_VENDOR := vendor
