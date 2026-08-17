@@ -1,3 +1,15 @@
+# This is a system-as-root device, so the build places file_contexts.bin in the
+# root of the system image. Android 12 dropped system-as-root and with it the
+# upstream label for this path, which makes e2fsdroid fail while writing the
+# image:
+#
+#   set_selinux_xattr: No such file or directory searching for label
+#   "/file_contexts.bin"
+#
+# rootfs matches how AOSP labels the other root files it still lists (/init.*,
+# /build.prop, /fstab.*).
+/file_contexts\.bin                u:object_r:rootfs:s0
+
 /bt_firmware(/.*)?                 u:object_r:bt_firmware_file:s0
 /firmware(/.*)?                    u:object_r:firmware_file:s0
 # /dsp is labelled upstream as adsprpcd_file
