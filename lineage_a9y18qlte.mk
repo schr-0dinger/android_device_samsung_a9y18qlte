@@ -18,6 +18,15 @@
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
+# The A9 (2018) launched on Oreo MR1, and the device still reports
+# ro.product.first_api_level=27.  This relaxes the requirements Android applies
+# to devices that *launched* on a newer release - which matters here, because
+# the vendor partition is VNDK 29 and Samsung's Treble is the "vndk.lite"
+# variant rather than the full interface.
+$(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_o_mr1.mk)
+
+TARGET_BOOT_ANIMATION_RES := 1080
+
 # Inherit some common Lineage stuff
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
@@ -33,3 +42,16 @@ PRODUCT_GMS_CLIENTID_BASE := android-samsung
 
 TARGET_VENDOR := samsung
 TARGET_VENDOR_PRODUCT_NAME := a9y18qlte
+
+# Report the stock Samsung fingerprint rather than a custom-build one.  This is
+# the main app-compatibility lever available on this device.
+#
+# NOTE: this still names Android 10 (QP1A / A920FXXS7CVI9), because that is the
+# last firmware Samsung shipped for SM-A920F - there is no A12 stock fingerprint
+# to claim.  On an Android 12 build that leaves ro.build.fingerprint disagreeing
+# with ro.build.version.release, so revisit once the ROM boots and the actual
+# Play Integrity verdict can be measured instead of guessed at.
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    PRIVATE_BUILD_DESC="a9y18qltexx-user 10 QP1A.190711.020 A920FXXS7CVI9 release-keys"
+
+BUILD_FINGERPRINT := "samsung/a9y18qltexx/a9y18qlte:10/QP1A.190711.020/A920FXXS7CVI9:user/release-keys"

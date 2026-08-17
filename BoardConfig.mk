@@ -207,8 +207,15 @@ TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 PRODUCT_FULL_TREBLE_OVERRIDE := true
 BOARD_SHIPPING_API_LEVEL := 26
-BOARD_VNDK_VERSION := current
-BOARD_VNDK_RUNTIME_DISABLE := true
+# Android 12 removed VNDK-Lite ("BOARD_VNDK_RUNTIME_DISABLE is obsolete"), which
+# is what this device relied on: it reports ro.vndk.lite=true because Samsung
+# shipped a relaxed vendor interface rather than full Treble.
+#
+# The replacement is a frozen VNDK snapshot. The vendor blobs are Android 10
+# binaries expecting VNDK 29, so pin that rather than 'current' (which on 19.1
+# means 31 and would ask A10 blobs to link against A12 VNDK libraries).
+# LineageOS 19.1 ships prebuilts/vndk/{v28,v29,v30,v31}, so v29 is available.
+BOARD_VNDK_VERSION := 29
 
 # Vendor / ODM
 TARGET_COPY_OUT_VENDOR := vendor
@@ -255,12 +262,20 @@ BOARD_ROOT_EXTRA_FOLDERS := config omr efs
 BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp_policy
 
 # SELinux
-include device/qcom/sepolicy/sepolicy.mk
-BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/private
+#
+# Two things moved in Android 12:
+#   - qcom renamed sepolicy.mk to SEPolicy.mk, and sdm660 lives in the
+#     legacy-um tree (device/qcom/sepolicy-legacy-um/legacy/vendor/sdm660).
+#   - device policy that used to go in BOARD_PLAT_*_SEPOLICY_DIR now belongs in
+#     SYSTEM_EXT_*_SEPOLICY_DIRS; the plat variables no longer take device
+#     additions, since /system is meant to stay device-agnostic.
+include device/qcom/sepolicy-legacy-um/SEPolicy.mk
+
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
 # multiclientd and smdexe are declared public so vendor policy can name them -
-# rild has to binder into multiclientd, and neither plat nor vendor could
-# express that while the type was private. See sepolicy/public.
-BOARD_PLAT_PUBLIC_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/public
+# rild has to binder into multiclientd, and neither side could express that
+# while the type was private. See sepolicy/public.
+SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/public
 # Domains for the Samsung binaries under /vendor. These must live in vendor
 # policy, not plat_private: declaring a vendor_file_type there trips Treble
 # neverallows.

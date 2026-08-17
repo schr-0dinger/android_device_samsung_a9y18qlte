@@ -335,7 +335,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     libstagefright_foundation_ext
 
-# Camera app (replaces Aperture, see TARGET_APERTURE_OPTOUT in qassa_a9y18qlte.mk)
+# Camera app. LineageOS 19.1 ships Snap; Aperture only arrives in 20.x, so there
+# is no opt-out flag to set here the way QASSA needed one.
 PRODUCT_PACKAGES += \
     Snap
 
