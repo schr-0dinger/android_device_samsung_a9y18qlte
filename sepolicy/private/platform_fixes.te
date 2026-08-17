@@ -139,3 +139,27 @@ allow system_app proc_net:file r_file_perms;      # /proc/<pid>/net/if_inet6
 # --- from the enforcing trial ------------------------------------------------
 allow platform_app bluetooth_data_file:dir getattr;
 binder_call(bluetooth, gpuservice)
+
+# --- the enforcing bootloop --------------------------------------------------
+# For the record, because this denial looks damning and is not:
+#
+#   5.413  init: starting service 'vendor.keymaster-3-0'
+#   5.442  init: last message ever
+#   5.453  avc: denied { read } comm="hwservicemanage" name="event-log-tags"
+#          scontext=u:r:hwservicemanager:s0
+#          tcontext=u:object_r:runtime_event_log_tags_file:s0 permissive=0
+#
+# hwservicemanager is how every HAL registers and init was stuck in late-fs, so
+# this reads like the cause. It is not, on two counts: the denial is timestamped
+# 11ms AFTER init's last message, and logd.te:27 neverallows it for every domain
+# outside a fixed list that hwservicemanager is not on - so it could not be
+# granted even if it were. Correlation, not cause. Left denied.
+#
+# The actual cause was vendor.sys.qseecomd.enable having no property_contexts
+# entry, which left u:r:tee:s0 unable to set it while pa_daemon_qsee.rc sat in
+# `on late-fs` running `wait_for_prop` on that exact property. See
+# sepolicy/vendor/property_contexts.
+
+# The other non-noatsecure denial from that boot. Not implicated in the hang,
+# but real.
+allow kernel block_device:dir search;

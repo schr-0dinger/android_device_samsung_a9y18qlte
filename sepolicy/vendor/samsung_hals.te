@@ -57,3 +57,28 @@ allow hal_power_default sysfs_batteryinfo:dir search;
 type sec_biometrics_data_file, file_type, data_file_type;
 allow hal_fingerprint_default sec_biometrics_data_file:dir create_dir_perms;
 allow hal_fingerprint_default sec_biometrics_data_file:file create_file_perms;
+
+
+# --- undeclared stock EFS types ---------------------------------------------
+# The failed enforcing boot logged:
+#   SELinux: Context u:object_r:sec_efs_file:s0 is not valid (left unmapped).
+#   SELinux: Context u:object_r:omr_file:s0 is not valid (left unmapped).
+#
+# Both are xattrs the stock Samsung firmware wrote onto /efs and /omr. Our
+# policy never declared them, so the kernel maps them to unlabeled - harmless
+# while permissive, but it denies access under enforcing to anything that has
+# to read those files, hal_keymaster_default among them since its own rc
+# creates /efs/DAK.
+#
+# Same fix as battery_efs_file: declare the type so the existing xattr becomes
+# valid rather than relabelling the partition.
+#
+# This was tried first as the fix for the late-fs hang and did not resolve it -
+# the hang was vendor.sys.qseecomd.enable, see sepolicy/vendor/property_contexts.
+# Keeping it because an unmapped context is a real defect either way.
+type sec_efs_file, file_type, data_file_type;
+type omr_file, file_type, data_file_type;
+
+allow hal_keymaster_default sec_efs_file:dir create_dir_perms;
+allow hal_keymaster_default sec_efs_file:file create_file_perms;
+allow hal_keymaster_default efs_file:dir search;

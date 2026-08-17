@@ -59,8 +59,14 @@ allow smdexe sysfs_sec_switch:file { open read getattr };
 allow smdexe self:capability setuid;
 
 # connfwexe holds a wakelock over system_suspend and also drops privileges.
+# binder_call() covers the calls themselves but not looking the interface up in
+# hwservicemanager first, which is a separate class.
 binder_call(connfwexe, system_suspend)
+allow connfwexe system_suspend_hwservice:hwservice_manager find;
 allow connfwexe self:capability setuid;
+
+# The IMS daemon configures its own network interfaces for the IMS PDN.
+allow samsung_imsd self:capability net_admin;
 
 # multiclientd inspects peer processes and reads hwservicemanager properties.
 # Deliberately narrow: r_file_perms would pull in ioctl and lock, which
@@ -71,3 +77,8 @@ get_prop(multiclientd, hwservicemanager_prop)
 r_dir_file(multiclientd, system_app)
 allow multiclientd domain:dir search;
 allow multiclientd domain:file { open read getattr };
+
+# It also walks /data/user_de/0 to reach the telephony provider and the phone
+# app while brokering the second SIM. multiclientd is coredomain, so this is
+# core-to-core and needs no Treble violator attribute - only the traversal.
+allow multiclientd radio_data_file:dir search;

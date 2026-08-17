@@ -1,0 +1,24 @@
+# Samsung's qseecomd sets this once the TEE listeners are up. It is not in
+# qcom's vendor property_contexts, so it fell through to vendor_default_prop,
+# which u:r:tee:s0 may not set. The enforcing boot logged:
+#
+#   selinux: avc: denied { set } for property=vendor.sys.qseecomd.enable
+#     pid=567 scontext=u:r:tee:s0 tcontext=u:object_r:vendor_default_prop:s0
+#   init: Unable to set property 'vendor.sys.qseecomd.enable' to 'true'
+#
+# That is fatal rather than cosmetic: pa_daemon_qsee.rc has
+#   on late-fs
+#       wait_for_prop vendor.sys.qseecomd.enable true
+# and wait_for_prop blocks init itself, so init never leaves late-fs and the
+# device hangs at the Samsung logo with no panic and no further log output.
+#
+# qcom types the sibling property vendor.sys.listeners.registered as
+# vendor_tee_listener_prop; this mirrors that for the Samsung-only one.
+vendor.sys.qseecomd.enable    u:object_r:vendor_qseecomd_prop:s0
+
+# Two more Samsung-only properties with no qcom entry. Neither hangs boot the
+# way the one above does - the Bluetooth HAL publishes its firmware version and
+# rild records a failed interface configuration - but both were logging denials
+# on every boot.
+vendor.bluetooth_fw_ver          u:object_r:samsung_bluetooth_prop:s0
+persist.ril.interfaceconf.failed u:object_r:samsung_ril_prop:s0

@@ -1,0 +1,14 @@
+# Binder services registered by the Samsung system apps. See
+# sepolicy/private/service_contexts for why these need labelling at all.
+
+type samsung_ims_service, service_manager_type;
+
+# add_service() grants add plus find, which the IMS app needs in both
+# directions - it registers ims6 and then looks it back up from its own
+# manager classes.
+add_service(system_app, samsung_ims_service)
+
+# The telephony stack and the IMS daemon are the consumers.
+allow radio samsung_ims_service:service_manager find;
+allow platform_app samsung_ims_service:service_manager find;
+allow samsung_imsd samsung_ims_service:service_manager find;

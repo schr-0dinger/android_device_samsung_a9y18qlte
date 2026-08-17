@@ -1,0 +1,12 @@
+# Samsung's IMS app registers a binder service named "ims6" that no policy in
+# this tree labelled, so servicemanager fell back to default_android_service:
+#
+#   avc: denied { add } for service=ims6 scontext=u:r:system_app:s0
+#     tcontext=u:object_r:default_android_service:s0 tclass=service_manager
+#
+# com.sec.imsservice runs as system_app, so this is a platform service and
+# belongs in the plat_private service_contexts rather than the vendor one.
+# secims is the main IMS binder service that `dumpsys secims` talks to; ims6 is
+# the IPv6 companion. Both are registered by the same app, so they share a type.
+ims6      u:object_r:samsung_ims_service:s0
+secims    u:object_r:samsung_ims_service:s0

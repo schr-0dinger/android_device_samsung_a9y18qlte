@@ -1,0 +1,67 @@
+# Types for the Samsung and Trustonic HIDL interfaces labelled in
+# sepolicy/vendor/hwservice_contexts. See that file for why an unlabelled
+# interface is fatal under enforcing rather than cosmetic.
+#
+# Every interface in the vendor manifest gets a type, but only the domains that
+# were actually observed registering or looking one up get a rule. Labelling an
+# interface nothing yet uses is harmless; granting a domain access it does not
+# need is not.
+#
+# These are deliberately NOT given the vendor_hwservice attribute. multiclientd
+# and the IMS stack are coredomain on this device but still have to look up the
+# Samsung radio interfaces, and AOSP neverallows coredomain from finding
+# vendor_hwservice. Attributing them would therefore fail the Treble tests
+# outright rather than describe how this device is actually wired.
+
+type samsung_audio_hwservice, hwservice_manager_type;
+type samsung_camera_hwservice, hwservice_manager_type;
+type samsung_fingerprint_hwservice, hwservice_manager_type;
+type samsung_gnss_hwservice, hwservice_manager_type;
+type samsung_health_hwservice, hwservice_manager_type;
+type samsung_light_hwservice, hwservice_manager_type;
+type samsung_media_hwservice, hwservice_manager_type;
+type samsung_miscpower_hwservice, hwservice_manager_type;
+type samsung_proca_hwservice, hwservice_manager_type;
+type samsung_radio_hwservice, hwservice_manager_type;
+type samsung_securestorage_hwservice, hwservice_manager_type;
+type samsung_snap_hwservice, hwservice_manager_type;
+type samsung_tlc_hwservice, hwservice_manager_type;
+type samsung_vaultkeeper_hwservice, hwservice_manager_type;
+type samsung_vibrator_hwservice, hwservice_manager_type;
+type samsung_widevine_hwservice, hwservice_manager_type;
+type samsung_wifi_hwservice, hwservice_manager_type;
+type samsung_wsm_hwservice, hwservice_manager_type;
+type trustonic_tee_hwservice, hwservice_manager_type;
+type trustonic_teeregistry_hwservice, hwservice_manager_type;
+type nxp_nfc_hwservice, hwservice_manager_type;
+type lineage_touch_hwservice, hwservice_manager_type;
+
+# --- registration -----------------------------------------------------------
+# add_hwservice() grants { add find } on the service plus add on
+# hidl_base_hwservice, which every HIDL server needs.
+add_hwservice(hal_audio_default, samsung_audio_hwservice)
+add_hwservice(hal_camera_default, samsung_camera_hwservice)
+add_hwservice(hal_fingerprint_default, samsung_fingerprint_hwservice)
+add_hwservice(hal_health_default, samsung_health_hwservice)
+add_hwservice(hal_light_default, samsung_light_hwservice)
+add_hwservice(hal_nfc_default, nxp_nfc_hwservice)
+add_hwservice(hal_power_default, samsung_miscpower_hwservice)
+add_hwservice(hal_wifi_default, samsung_wifi_hwservice)
+add_hwservice(hal_vibrator_default, samsung_vibrator_hwservice)
+add_hwservice(sec_wsm, samsung_wsm_hwservice)
+add_hwservice(rild, samsung_radio_hwservice)
+add_hwservice(sec_proca, samsung_proca_hwservice)
+add_hwservice(tee_hal, trustonic_tee_hwservice)
+add_hwservice(teeregistry_hal, trustonic_teeregistry_hwservice)
+
+# --- lookups ----------------------------------------------------------------
+# multiclientd brokers the second SIM's radio channel through the Samsung radio
+# bridge, so it looks the interface up without ever serving it.
+allow multiclientd samsung_radio_hwservice:hwservice_manager find;
+
+# The LineageOS framework probes the touch HAL from system_server on boot.
+allow system_server lineage_touch_hwservice:hwservice_manager find;
+
+# The Samsung camera provider queries the framework display interface for panel
+# geometry before configuring its streams.
+allow hal_camera_default fwk_display_hwservice:hwservice_manager find;

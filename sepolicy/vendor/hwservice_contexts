@@ -1,0 +1,54 @@
+# Samsung and Trustonic HIDL interfaces.
+#
+# None of these were labelled by any policy in this tree, so hwservicemanager
+# fell back to default_android_hwservice, which vendor domains may neither add
+# nor find. Under permissive that is invisible; under enforcing every Samsung
+# HAL that registers one of these interfaces fails and init restarts it in a
+# loop - which is what the earlier "camera crash, phone app crash, settings
+# crash, call crash" report actually was:
+#
+#   avc: denied { add } for interface=vendor.samsung.hardware.camera.provider::
+#     ISehCameraProvider scontext=u:r:hal_camera_default:s0
+#     tcontext=u:object_r:default_android_hwservice:s0 tclass=hwservice_manager
+#
+# The list below is the full set from /vendor/etc/vintf/manifest.xml rather
+# than only the ones that happened to log a denial, so a HAL that registers
+# late does not turn into the next bootloop.
+
+vendor.samsung.hardware.audio::ISehDevicesFactory                         u:object_r:samsung_audio_hwservice:s0
+vendor.samsung.hardware.biometrics.fingerprint::ISehBiometricsFingerprint u:object_r:samsung_fingerprint_hwservice:s0
+vendor.samsung.hardware.camera.provider::ISehCameraProvider               u:object_r:samsung_camera_hwservice:s0
+vendor.samsung.hardware.gnss::ISehGnss                                    u:object_r:samsung_gnss_hwservice:s0
+vendor.samsung.hardware.health::ISehHealth                                u:object_r:samsung_health_hwservice:s0
+vendor.samsung.hardware.light::ISehLight                                  u:object_r:samsung_light_hwservice:s0
+vendor.samsung.hardware.media.converter::ISehColorConverterStore          u:object_r:samsung_media_hwservice:s0
+vendor.samsung.hardware.miscpower::ISehMiscPower                          u:object_r:samsung_miscpower_hwservice:s0
+vendor.samsung.hardware.radio.bridge::ISehBridge                          u:object_r:samsung_radio_hwservice:s0
+vendor.samsung.hardware.radio.channel::ISehChannel                        u:object_r:samsung_radio_hwservice:s0
+vendor.samsung.hardware.radio::ISehRadio                                  u:object_r:samsung_radio_hwservice:s0
+vendor.samsung.hardware.security.proca::ISehProca                         u:object_r:samsung_proca_hwservice:s0
+vendor.samsung.hardware.security.securestorage::ISehSecureStorage         u:object_r:samsung_securestorage_hwservice:s0
+vendor.samsung.hardware.security.vaultkeeper::ISehVaultKeeper             u:object_r:samsung_vaultkeeper_hwservice:s0
+vendor.samsung.hardware.security.widevine.keyprovisioning::ISehWidevineKeyProvisioning u:object_r:samsung_widevine_hwservice:s0
+vendor.samsung.hardware.security.wsm::ISehWsm                             u:object_r:samsung_wsm_hwservice:s0
+vendor.samsung.hardware.snap::ISehSnap                                    u:object_r:samsung_snap_hwservice:s0
+vendor.samsung.hardware.tlc.atn::ISehAtn                                  u:object_r:samsung_tlc_hwservice:s0
+vendor.samsung.hardware.tlc.iccc::ISehIccc                                u:object_r:samsung_tlc_hwservice:s0
+vendor.samsung.hardware.tlc.payment::ISehTlcPayment                       u:object_r:samsung_tlc_hwservice:s0
+vendor.samsung.hardware.tlc.tima::ISehTima                                u:object_r:samsung_tlc_hwservice:s0
+vendor.samsung.hardware.tlc.ucm::ISehUcm                                  u:object_r:samsung_tlc_hwservice:s0
+vendor.samsung.hardware.vibrator::ISehVibrator                            u:object_r:samsung_vibrator_hwservice:s0
+vendor.samsung.hardware.wifi.hostapd::ISehHostapd                         u:object_r:samsung_wifi_hwservice:s0
+vendor.samsung.hardware.wifi.supplicant::ISehSupplicant                   u:object_r:samsung_wifi_hwservice:s0
+vendor.samsung.hardware.wifi::ISehWifi                                    u:object_r:samsung_wifi_hwservice:s0
+vendor.trustonic.tee::ITee                                                u:object_r:trustonic_tee_hwservice:s0
+vendor.trustonic.teeregistry::ITeeRegistry                                u:object_r:trustonic_teeregistry_hwservice:s0
+
+# Not Samsung, but unlabelled for the same reason: the NFC HAL serves NXP's
+# vendor extension alongside the AOSP interface.
+vendor.nxp.nxpnfc::INxpNfc                                                u:object_r:nxp_nfc_hwservice:s0
+
+# The LineageOS framework probes for its touch HAL on every boot. No such HAL
+# exists in this tree, so the lookup returns null either way - labelling it
+# only stops the probe from being logged as a denial.
+vendor.lineage.touch::IHighTouchPollingRate                               u:object_r:lineage_touch_hwservice:s0

@@ -99,7 +99,16 @@ BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
 # /sys/fs/pstore stays empty - which is why the enforcing bootloop could not be
 # diagnosed at all. With console=ram the failed boot is readable from recovery.
 BOARD_KERNEL_CMDLINE := console=ram androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=1 firmware_class.path=/vendor/firmware_mnt/image
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+# No androidboot.selinux here: the device boots enforcing. Getting there needed
+# four classes of fix, all of them invisible while permissive because a denial
+# that is merely logged still lets the access through:
+#   - vendor.sys.qseecomd.enable was untyped, so u:r:tee:s0 could not set it and
+#     pa_daemon_qsee.rc's `wait_for_prop` in `on late-fs` blocked init forever.
+#   - Every Samsung/Trustonic HIDL interface was unlabelled, so each HAL failed
+#     to register and init restarted it in a loop. That was the real cause of
+#     the camera/phone/settings crashes seen in the first enforcing attempt.
+#   - The Samsung IMS binder services (secims, ims6) were unlabelled.
+#   - Stock /efs xattrs (sec_efs_file, omr_file) named types no policy declared.
 BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) --second_offset $(BOARD_KERNEL_SECOND_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE)

@@ -62,6 +62,18 @@ init_daemon_domain(qseecomd_sh)
 allow qseecomd_sh vendor_shell_exec:file rx_file_perms;
 allow qseecomd_sh vendor_toolbox_exec:file rx_file_perms;
 
+# Samsung's qseecomd announces readiness with vendor.sys.qseecomd.enable, which
+# qcom's property_contexts does not name. See sepolicy/vendor/property_contexts
+# for why an untyped property here hangs init at late-fs forever.
+type vendor_qseecomd_prop, property_type;
+set_prop(tee, vendor_qseecomd_prop)
+
+type samsung_bluetooth_prop, property_type;
+set_prop(hal_bluetooth_default, samsung_bluetooth_prop)
+
+type samsung_ril_prop, property_type;
+set_prop(rild, samsung_ril_prop)
+
 
 ##############################################################################
 # Rules observed once each service actually reached its own domain. None of

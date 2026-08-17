@@ -248,3 +248,16 @@ allow tee gatekeeper_data_file:file create_file_perms;
 # itself, so every traversal was refused - 28 denials in one session. Valid
 # regardless of enforcement mode.
 allow hal_health_default efs_file:dir search;
+
+# The sensor daemon reads its calibration through /persist, which on this device
+# is reached via symlinks, and walks /efs the same way the health HAL does.
+# Reading a symlink needs read+getattr on the link itself, not just on the
+# target, which is why these show up as lnk_file rather than file.
+allow sensors efs_file:dir search;
+allow sensors persist_file:lnk_file r_file_perms;
+
+# Same two paths again for the HIDL sensors HAL, which is a separate domain from
+# the sensors daemon, and for macloader - it reads the wifi MAC out of
+# /efs/wifi and cannot get there without search on the /efs root.
+allow hal_sensors_default persist_file:lnk_file r_file_perms;
+allow macloader efs_file:dir search;
