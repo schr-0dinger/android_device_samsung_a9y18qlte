@@ -784,36 +784,6 @@
         <fqname>@2.0::ISehVibrator/default</fqname>
     </hal>
     <hal format="hidl">
-        <name>android.hardware.wifi</name>
-        <transport>hwbinder</transport>
-        <version>1.3</version>
-        <interface>
-            <name>IWifi</name>
-            <instance>default</instance>
-        </interface>
-        <fqname>@1.3::IWifi/default</fqname>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.wifi.hostapd</name>
-        <transport>hwbinder</transport>
-        <version>1.1</version>
-        <interface>
-            <name>IHostapd</name>
-            <instance>default</instance>
-        </interface>
-        <fqname>@1.1::IHostapd/default</fqname>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.wifi.supplicant</name>
-        <transport>hwbinder</transport>
-        <version>1.2</version>
-        <interface>
-            <name>ISupplicant</name>
-            <instance>default</instance>
-        </interface>
-        <fqname>@1.2::ISupplicant/default</fqname>
-    </hal>
-    <hal format="hidl">
         <name>vendor.samsung.hardware.wifi</name>
         <transport>hwbinder</transport>
         <version>2.0</version>
@@ -863,4 +833,13 @@
         </interface>
         <fqname>@1.0::ITeeRegistry/default</fqname>
     </hal>
+    <!-- android.hardware.wifi, .hostapd and .supplicant are declared by the
+         manifest fragments that LineageOS's own wifi HAL modules install
+         (/vendor/etc/vintf/manifest/*.xml), at 1.5, 1.3 and 1.4 respectively.
+         This device's A10 entries named 1.3/1.1/1.2 for the same HALs, and
+         checkvintf rejects two sources declaring different versions:
+           HAL "android.hardware.wifi.supplicant" has a conflict:
+           Conflicting major version: 1.2 vs. 1.4
+         The vendor.qti.* and vendor.samsung.* wifi extensions below are kept -
+         nothing else declares those. -->
 </manifest>
