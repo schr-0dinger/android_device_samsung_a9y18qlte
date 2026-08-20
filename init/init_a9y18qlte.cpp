@@ -30,10 +30,18 @@
 #include <sys/_system_properties.h>
 
 #include <android-base/properties.h>
-#include "property_service.h"
 #include "vendor_init.h"
 
-using android::init::property_set;
+/*
+ * Android 12 removed android::init::property_set; property_service.h now
+ * exposes only PropertyInit/StartPropertyService/CanReadProperty.  Nothing here
+ * ever called it - the overrides below write through __system_property_* - so
+ * the using-declaration and the header it needed are both gone.
+ *
+ * Dropping property_service.h also drops the transitive include of
+ * android-base/result.h, which since A12 pulls in <fmt/chrono.h>.  That is why
+ * this file needs only libbase headers and not libbase itself.
+ */
 
 void property_override(char const prop[], char const value[])
 {
