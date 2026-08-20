@@ -1,3 +1,6 @@
+# This is a system-as-root device, so the build places file_contexts.bin in the ro.
+/file_contexts\.bin                u:object_r:rootfs:s0
+
 /bt_firmware(/.*)?                 u:object_r:bt_firmware_file:s0
 /firmware(/.*)?                    u:object_r:firmware_file:s0
 # /dsp is labelled upstream as adsprpcd_file (device/qcom/sepolicy-legacy-um/legac.
