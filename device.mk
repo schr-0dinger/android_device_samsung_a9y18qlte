@@ -22,14 +22,7 @@ DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay \
     $(LOCAL_PATH)/overlay-lineage
 
-# Dalvik heap
-#
-# The tree previously inherited no dalvik-heap config at all, so the device
-# booted with zero dalvik.vm.heap* properties and ART fell back to its built-in
-# defaults - a ~16MB growth limit. com.sec.imsservice died with
-# java.lang.OutOfMemoryError roughly every 9 seconds, which stopped IMS from
-# ever completing SIP registration (and would starve any other memory-hungry
-# app). SM-A920F reports MemTotal ~5.6GB, so use the 6GB profile.
+# Dalvik heap The tree previously inherited no dalvik-heap config at all, so the d.
 $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
 ENABLE_VENDOR_RIL_SERVICE := true
@@ -38,8 +31,7 @@ ENABLE_VENDOR_RIL_SERVICE := true
 TARGET_SCREEN_HEIGHT := 2220
 TARGET_SCREEN_WIDTH := 1080
 
-# Screen density
-# Device uses high-density artwork where available
+# Screen density Device uses high-density artwork where available.
 PRODUCT_AAPT_CONFIG := xlarge
 PRODUCT_AAPT_PREF_CONFIG := xxxhdpi
 # A list of dpis to select prebuilt apk, in precedence order.
@@ -156,8 +148,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/sec_config:$(TARGET_COPY_OUT_VENDOR)/etc/sec_config
 
 # Use Havoc-style ODM layout during bring-up.
-# Runtime /odm paths are satisfied via root symlinks into /vendor/odm,
-# which avoids the separate-odm symlink loop seen in earlier builds.
 	
 # Keylayout
 PRODUCT_COPY_FILES += \
@@ -288,23 +278,6 @@ PRODUCT_PACKAGES += \
     init.recovery.qcom.rc
 
 # Samsung CSC / OMC carrier data is deliberately NOT shipped.
-#
-# imsservice.apk parses customer.xml directly and, without it, falls back to a
-# hardcoded profile with Voice_Domain_Preference_EUTRAN=CSVoiceOnly for every
-# carrier - which is why IMS never registers on a bare device.
-#
-# It is not shipped because CSC is region-specific (the SM-A920F INS firmware
-# carries only BNG/INS/NPB/NPL/SLK). Shipping one region would apply, say,
-# Indian carrier settings to a European user.
-#
-# Note: this ROM does not mount the odm partition at all - /odm is just symlinks
-# into /vendor/odm - so a user's factory CSC is NOT reachable either. The
-# region-neutral fix is a sane default inside imsservice; mounting the real odm
-# partition so each user gets their own /odm/omc/<sales_code>/ would be the
-# proper long-term answer.
-#
-# configs/csc/ is gitignored, so a public clone has no files here and ships
-# nothing. Drop the extracted files in locally to enable it for your own device.
 ifneq ($(wildcard $(LOCAL_PATH)/configs/csc/customer.xml),)
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/csc/customer.xml:system/csc/customer.xml \
@@ -312,30 +285,15 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/csc/sales_code.dat:system/csc/sales_code.dat
 endif
 
-# IPA (IP accelerator)
-#
-# /vendor/bin/ipacm is extracted as a blob and ipacm.rc ships, but the stock
-# /vendor/etc/IPACM_cfg.xml was never captured by extract-files.sh. Without it
-# ipacm dereferences unloaded config and dies with SIGSEGV (fault addr 0x188)
-# on every start, so init restart-loops it forever - visible as repeated
-# "ipa ipa2_nat_del_cmd:799 Nat table not initialized". Ship the matching QCOM
-# config for this IPA generation (v2, same as the ipa2_* call in the error).
+# IPA (IP accelerator) /vendor/bin/ipacm is extracted as a blob and ipacm.rc ships.
 PRODUCT_COPY_FILES += \
     vendor/qcom/opensource/data-ipa-cfg-mgr/ipacm/src/IPACM_cfg.xml:$(TARGET_COPY_OUT_VENDOR)/etc/IPACM_cfg.xml
 
-# Media
-#
-# libstagefright_omx (and the omx@1.0 service) are built with
-# -D__ANDROID_VNDK_EXT__, so they reference the Qualcomm VNDK-extension mime
-# types MEDIA_MIMETYPE_VIDEO_DIVX4 / _DIVX311. Those live only in the VNDK
-# extension library, which nothing was pulling into the build - so the vendor
-# partition got Samsung's stock libstagefright_foundation.so instead, which
-# exports only DIVX/DIVX3. Result: the omx service failed to link and
-# crash-looped every 5s, breaking all media playback and video recording.
+# Media libstagefright_omx (and the omx@1.0 service) are built with D__ANDROID_VND.
 PRODUCT_PACKAGES += \
     libstagefright_foundation_ext
 
-# Camera app (replaces Aperture, see TARGET_APERTURE_OPTOUT in qassa_a9y18qlte.mk)
+# Camera app.
 PRODUCT_PACKAGES += \
     Snap
 

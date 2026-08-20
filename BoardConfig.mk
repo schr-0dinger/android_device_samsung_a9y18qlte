@@ -54,14 +54,7 @@ USE_XML_AUDIO_POLICY_CONF := 1
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 
-# Platform
-# APNs
-#
-# AOSP's apns-conf.xml has no type="ims" entry for BSNL (mcc 404), only
-# default/supl/mms. IMS registration needs an IMS PDN, so without it the modem
-# can never bring up the IMS bearer and SIP registration never happens
-# (dumpsys secims: "Registered: false"). Add an IMS APN for every BSNL MNC.
-# vendor/qassa/prebuilt/common/Android.mk merges this via custom_apns.py.
+# Platform APNs AOSP's apns-conf.xml has no type="ims" entry for BSNL (mcc 404), o.
 CUSTOM_APNS_FILE := $(DEVICE_PATH)/configs/custom_apns.xml
 
 BOARD_VENDOR := samsung
@@ -94,21 +87,9 @@ BOARD_KERNEL_OFFSET := 0x00008000
 BOARD_RAMDISK_OFFSET := 0x02000000
 BOARD_KERNEL_SECOND_OFFSET := 0x00F00000
 BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
-# console=ram, not console=null. PSTORE_CONSOLE hooks the console layer, so with
-# no console registered the kernel log never reaches the pstore buffer and
-# /sys/fs/pstore stays empty - which is why the enforcing bootloop could not be
-# diagnosed at all. With console=ram the failed boot is readable from recovery.
+# console=ram, not console=null.
 BOARD_KERNEL_CMDLINE := console=ram androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=1 firmware_class.path=/vendor/firmware_mnt/image
-# No androidboot.selinux here: the device boots enforcing. Getting there needed
-# four classes of fix, all of them invisible while permissive because a denial
-# that is merely logged still lets the access through:
-#   - vendor.sys.qseecomd.enable was untyped, so u:r:tee:s0 could not set it and
-#     pa_daemon_qsee.rc's `wait_for_prop` in `on late-fs` blocked init forever.
-#   - Every Samsung/Trustonic HIDL interface was unlabelled, so each HAL failed
-#     to register and init restarted it in a loop. That was the real cause of
-#     the camera/phone/settings crashes seen in the first enforcing attempt.
-#   - The Samsung IMS binder services (secims, ims6) were unlabelled.
-#   - Stock /efs xattrs (sec_efs_file, omr_file) named types no policy declared.
+# No androidboot.selinux here: the device boots enforcing.
 BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) --second_offset $(BOARD_KERNEL_SECOND_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE)
@@ -118,25 +99,13 @@ TARGET_KERNEL_CONFIG := a9y18qlte_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/a9y18qlte
 TARGET_KERNEL_VERSION := 4.4
 TARGET_PREBUILT_KERNEL := $(OUT_DIR)/target/product/$(TARGET_DEVICE)/obj/KERNEL_OBJ/arch/arm64/boot/Image.gz-dtb
-# Use the GCC 4.9 prebuilts shipped in the ROM tree instead of a toolchain
-# outside it. Recursive '=' is deliberate: BUILD_TOP is defined by
-# vendor/qassa/config/BoardConfigKernel.mk, which is parsed after this file.
+# Use the GCC 4.9 prebuilts shipped in the ROM tree instead of a toolchain outside it.
 KERNEL_TOOLCHAIN = $(BUILD_TOP)/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
 KERNEL_TOOLCHAIN_ARM32 = $(BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
 TARGET_KERNEL_CROSS_COMPILE_PREFIX_ARM32 := arm-linux-androideabi-
 
-# aarch64-linux-android-gcc in the AOSP prebuilt is not a compiler: it is a
-# python wrapper with a hardcoded '#!/usr/bin/python' shebang that just execs
-# real-aarch64-linux-android-gcc. Ubuntu 22.04 ships no /usr/bin/python, so the
-# wrapper dies with ENOENT ("execute_noreturn ... failed: No such file or
-# directory"). Call the real binary directly - the kernel Makefile reads
-# $(CROSS_COMPILE)gcc in exactly one place (Makefile:342, CC), and every other
-# tool in the prefix (as/ld/ar/nm/objcopy/strip) is a genuine ELF binary.
-#
-# Alternative, if you would rather fix it system-wide:
-#     sudo ln -s /usr/bin/python3 /usr/bin/python
-# The wrapper is python3-clean, so that works too.
+# aarch64-linux-android-gcc in the AOSP prebuilt is not a compiler: it is a python.
 KERNEL_CC = CC="$(CCACHE_BIN) $(KERNEL_TOOLCHAIN)/real-aarch64-linux-android-gcc"
 
 # Partitions
@@ -207,8 +176,8 @@ TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 PRODUCT_FULL_TREBLE_OVERRIDE := true
 BOARD_SHIPPING_API_LEVEL := 26
-BOARD_VNDK_VERSION := current
-BOARD_VNDK_RUNTIME_DISABLE := true
+# Android 12 removed VNDK-Lite ("BOARD_VNDK_RUNTIME_DISABLE is obsolete"), which i.
+BOARD_VNDK_VERSION := 29
 
 # Vendor / ODM
 TARGET_COPY_OUT_VENDOR := vendor
@@ -254,16 +223,13 @@ BOARD_ROOT_EXTRA_FOLDERS := config omr efs
 # Seccomp
 BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp_policy
 
-# SELinux
-include device/qcom/sepolicy/sepolicy.mk
-BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/private
-# multiclientd and smdexe are declared public so vendor policy can name them -
-# rild has to binder into multiclientd, and neither plat nor vendor could
-# express that while the type was private. See sepolicy/public.
-BOARD_PLAT_PUBLIC_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/public
-# Domains for the Samsung binaries under /vendor. These must live in vendor
-# policy, not plat_private: declaring a vendor_file_type there trips Treble
-# neverallows.
+# SELinux Two things moved in Android 12: qcom renamed sepolicy.mk to SEPolicy.mk,.
+include device/qcom/sepolicy-legacy-um/SEPolicy.mk
+
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
+# multiclientd and smdexe are declared public so vendor policy can name them rild.
+SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/public
+# Domains for the Samsung binaries under /vendor.
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 
 # WiFi

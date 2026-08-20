@@ -18,6 +18,11 @@
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
+# The A9 (2018) launched on Oreo MR1, and the device still reports ro.product.first_api_level=27.
+$(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_o_mr1.mk)
+
+TARGET_BOOT_ANIMATION_RES := 1080
+
 # Inherit some common Lineage stuff
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
@@ -33,3 +38,9 @@ PRODUCT_GMS_CLIENTID_BASE := android-samsung
 
 TARGET_VENDOR := samsung
 TARGET_VENDOR_PRODUCT_NAME := a9y18qlte
+
+# Report the stock Samsung fingerprint rather than a custom-build one.
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    PRIVATE_BUILD_DESC="a9y18qltexx-user 10 QP1A.190711.020 A920FXXS7CVI9 release-keys"
+
+BUILD_FINGERPRINT := "samsung/a9y18qltexx/a9y18qlte:10/QP1A.190711.020/A920FXXS7CVI9:user/release-keys"
