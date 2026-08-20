@@ -1,25 +1,16 @@
 /bt_firmware(/.*)?                 u:object_r:bt_firmware_file:s0
 /firmware(/.*)?                    u:object_r:firmware_file:s0
-/dsp(/.*)?                         u:object_r:vendor_file:s0
+# /dsp is labelled upstream as adsprpcd_file (device/qcom/sepolicy-legacy-um/legac.
 /omr(/.*)?                         u:object_r:vendor_file:s0
 /persist(/.*)?                     u:object_r:persist_file:s0
 # /efs/wifi labels moved to sepolicy/vendor/file_contexts with the type.
-# /efs/imei labels moved to sepolicy/vendor/file_contexts with the type.
-# /efs/FactoryApp labels moved to sepolicy/vendor/file_contexts alongside the
-# app_efs_file type declaration.
 /vendor/bin/hw/vendor\.samsung\.hardware\.wifi@2\.0-service u:object_r:hal_wifi_default_exec:s0
 /vendor/bin/hw/vendor\.samsung\.hardware\.light@3\.0-service u:object_r:hal_light_default_exec:s0
 /vendor/bin/hw/android\.hardware\.gatekeeper@1\.0-service u:object_r:hal_gatekeeper_default_exec:s0
 /vendor/bin/hw/android\.hardware\.keymaster@3\.0-service u:object_r:hal_keymaster_default_exec:s0
 /vendor/bin/hw/vendor\.samsung\.hardware\.biometrics\.fingerprint@3\.0-service u:object_r:hal_fingerprint_default_exec:s0
 
-# Samsung ships these HALs under names the stock file_contexts regexes do not
-# match - the AOSP patterns expect android.hardware.<iface>@<ver>-service, not
-# a vendor prefix or a .samsung/.wahoo suffix. Without a matching entry the
-# binary keeps the generic vendor_file label, no type_transition fires, and the
-# service inherits init's domain. That is invisible while permissive, but under
-# enforcing init cannot exec them and they crash-loop, taking camera, NFC and
-# telephony with them. Each maps onto the stock domain for its interface.
+# Samsung ships these HALs under names the stock file_contexts regexes do not matc.
 /vendor/bin/hw/vendor\.samsung\.hardware\.camera\.provider@3\.0-service u:object_r:hal_camera_default_exec:s0
 /vendor/bin/hw/nxp\.android\.hardware\.nfc@1\.1-service u:object_r:hal_nfc_default_exec:s0
 /vendor/bin/hw/android\.hardware\.usb@1\.1-service\.wahoo u:object_r:hal_usb_default_exec:s0
@@ -33,8 +24,7 @@
 /system/bin/connfwexe     u:object_r:connfwexe_exec:s0
 /system/bin/multiclientd  u:object_r:multiclientd_exec:s0
 
-# Block devices, names from /dev/block/by-name. See private/platform_fixes.te.
-# sda12 is by-name "persistent" - the FRP partition, so it takes the stock type.
+# Block devices, names from /dev/block/by-name.
 /dev/block/sda12          u:object_r:frp_block_device:s0
 /dev/block/sda28          u:object_r:sec_debug_block_device:s0
 
