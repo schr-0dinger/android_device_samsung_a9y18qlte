@@ -49,7 +49,7 @@ allow system_app ims_log_data_file:dir create_dir_perms;
 allow system_app ims_log_data_file:file create_file_perms;
 allow samsung_imsd ims_log_data_file:dir create_dir_perms;
 allow samsung_imsd ims_log_data_file:file create_file_perms;
-# get_prop(system_app, net_dns_prop) was here for the Samsung IMS app on A10.
+get_prop(system_app, net_dns_prop)
 allow system_app proc_net:file r_file_perms;      # /proc/<pid>/net/if_inet6
 
 
