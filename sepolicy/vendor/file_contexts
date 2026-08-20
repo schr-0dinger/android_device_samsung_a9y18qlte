@@ -1,18 +1,11 @@
-# Samsung vendor binaries with no upstream file_contexts entry. Unlabelled,
-# they keep the generic vendor_file type, no type_transition fires, and init
-# runs them in its own domain - which enforcing then refuses to exec.
+# Samsung vendor binaries with no upstream file_contexts entry.
 /vendor/bin/vendor\.samsung\.hardware\.security\.proca@2\.0-service u:object_r:sec_proca_exec:s0
 /vendor/bin/vendor\.samsung\.hardware\.security\.wsm@1\.0-service   u:object_r:sec_wsm_exec:s0
 /vendor/bin/hw/vendor\.trustonic\.tee@1\.0-service                  u:object_r:tee_hal_exec:s0
 /vendor/bin/hw/vendor\.trustonic\.teeregistry@1\.0-service          u:object_r:teeregistry_hal_exec:s0
 /vendor/bin/factory\.adsp                                           u:object_r:factory_adsp_exec:s0
 
-# qcom labels every other init.*.sh as qti_init_shell_exec but omits this one,
-# which is why it showed up as "qti_init_shell -> vendor_file : entrypoint".
-# Its shebang also pointed at /system/bin/sh; that is fixed in
-# rootdir/bin/init.qti.can.sh, since vendor components may not execute /system
-# files. (The script itself is inert here - it configures a CAN bus and only
-# acts when ro.hardware.type is "automotive".)
+# qcom labels every other init.*.sh as qti_init_shell_exec but omits this one, whi.
 /vendor/bin/init\.qti\.can\.sh                                      u:object_r:qti_init_shell_exec:s0
 
 # Oneshot services - see samsung_vendor_daemons.te.
@@ -20,26 +13,23 @@
 /vendor/bin/secril_config_svc                                       u:object_r:secril_config_exec:s0
 /vendor/bin/energy-awareness                                        u:object_r:energyawareness_exec:s0
 /vendor/bin/init\.qti\.qseecomd\.sh                                 u:object_r:qseecomd_sh_exec:s0
+# Labelled here rather than by qcom: LineageOS 19.1's sepolicy-legacy-um does not.
+/vendor/bin/init\.qcom\.sensors\.sh                                 u:object_r:init-qcom-sensors-sh_exec:s0
 
-# See rild.te. Both of these otherwise fall back to generic types that rild is
-# not permitted to touch.
+# See rild.te.
 /dev/socket/qosd                                                    u:object_r:qosd_socket:s0
 /data/vendor/secradio(/.*)?                                         u:object_r:rild_secradio_data_file:s0
 
 # Samsung fingerprint sensor node. See samsung_devices.te.
 /dev/esfp0                                                          u:object_r:sec_fingerprint_device:s0
 
-# Graphics allocator passthrough HAL. Mapped into every drawing process, so on
-# the generic vendor_file type it denied six domains at once. See
-# platform_fixes.te.
+# Graphics allocator passthrough HAL.
 /vendor/lib64/hw/gralloc\.sdm660\.so                                u:object_r:same_process_hal_file:s0
 /vendor/lib/hw/gralloc\.sdm660\.so                                  u:object_r:same_process_hal_file:s0
 
 # Samsung PTA character device.
-/dev/pta                                                            u:object_r:sec_pta_device:s0
 
-# Block devices. Nothing labelled these, so every consumer hit the generic
-# block_device type. Names taken from /dev/block/by-name on the device.
+# Block devices.
 /dev/block/sda1                                                     u:object_r:modem_efs_block_device:s0
 /dev/block/sda2                                                     u:object_r:modem_efs_block_device:s0
 /dev/block/sda3                                                     u:object_r:modem_efs_block_device:s0
@@ -56,13 +46,11 @@
 /dev/block/sda25                                                    u:object_r:cache_block_device:s0
 /dev/block/sda4                                                     u:object_r:ssd_block_device:s0
 
-# Battery calibration data. Matches the xattr the stock firmware already wrote,
-# and covers the files inside the directory, which were never labelled.
+# Battery calibration data.
 /efs/Battery(/.*)?                                                  u:object_r:battery_efs_file:s0
 /mnt/vendor/efs/Battery(/.*)?                                       u:object_r:battery_efs_file:s0
 
-# Factory calibration data, read by the health HAL and rild. Kept next to the
-# app_efs_file declaration in samsung_hals.te.
+# Factory calibration data, read by the health HAL and rild.
 /efs/FactoryApp(/.*)?                                               u:object_r:app_efs_file:s0
 /mnt/vendor/efs/FactoryApp(/.*)?                                    u:object_r:app_efs_file:s0
 
@@ -73,7 +61,6 @@
 # Fingerprint calibration and template data. See samsung_hals.te.
 /data/vendor/biometrics(/.*)?                                       u:object_r:sec_biometrics_data_file:s0
 
-# Wi-Fi calibration data, read by macloader. Type moved here from plat_private
-# with its consumer.
+# Wi-Fi calibration data, read by macloader.
 /efs/wifi(/.*)?                                                     u:object_r:wifi_efs_file:s0
 /mnt/vendor/efs/wifi(/.*)?                                          u:object_r:wifi_efs_file:s0

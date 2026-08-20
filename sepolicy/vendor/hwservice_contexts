@@ -1,19 +1,4 @@
 # Samsung and Trustonic HIDL interfaces.
-#
-# None of these were labelled by any policy in this tree, so hwservicemanager
-# fell back to default_android_hwservice, which vendor domains may neither add
-# nor find. Under permissive that is invisible; under enforcing every Samsung
-# HAL that registers one of these interfaces fails and init restarts it in a
-# loop - which is what the earlier "camera crash, phone app crash, settings
-# crash, call crash" report actually was:
-#
-#   avc: denied { add } for interface=vendor.samsung.hardware.camera.provider::
-#     ISehCameraProvider scontext=u:r:hal_camera_default:s0
-#     tcontext=u:object_r:default_android_hwservice:s0 tclass=hwservice_manager
-#
-# The list below is the full set from /vendor/etc/vintf/manifest.xml rather
-# than only the ones that happened to log a denial, so a HAL that registers
-# late does not turn into the next bootloop.
 
 vendor.samsung.hardware.audio::ISehDevicesFactory                         u:object_r:samsung_audio_hwservice:s0
 vendor.samsung.hardware.biometrics.fingerprint::ISehBiometricsFingerprint u:object_r:samsung_fingerprint_hwservice:s0
@@ -44,11 +29,7 @@ vendor.samsung.hardware.wifi::ISehWifi                                    u:obje
 vendor.trustonic.tee::ITee                                                u:object_r:trustonic_tee_hwservice:s0
 vendor.trustonic.teeregistry::ITeeRegistry                                u:object_r:trustonic_teeregistry_hwservice:s0
 
-# Not Samsung, but unlabelled for the same reason: the NFC HAL serves NXP's
-# vendor extension alongside the AOSP interface.
+# Not Samsung, but unlabelled for the same reason: the NFC HAL serves NXP's vendor.
 vendor.nxp.nxpnfc::INxpNfc                                                u:object_r:nxp_nfc_hwservice:s0
 
-# The LineageOS framework probes for its touch HAL on every boot. No such HAL
-# exists in this tree, so the lookup returns null either way - labelling it
-# only stops the probe from being logged as a denial.
-vendor.lineage.touch::IHighTouchPollingRate                               u:object_r:lineage_touch_hwservice:s0
+# The LineageOS framework probes for its touch HAL on every boot.

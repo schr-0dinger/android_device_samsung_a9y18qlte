@@ -1,23 +1,13 @@
-# sysfs_camera is declared in device/qcom/sepolicy (vendor), so these have to
-# live in vendor policy - plat cannot name the type.
-#
-# The camera provider reads flash and firmware-version nodes plus the v4l2
-# device names while enumerating sensors at startup. Without labels these fall
-# back to generic sysfs, which hal_camera_default is not permitted to touch.
+# sysfs_camera is declared in device/qcom/sepolicy (vendor), so these have to live.
 genfscon sysfs /devices/virtual/camera                        u:object_r:sysfs_camera:s0
 genfscon sysfs /devices/soc/ca00000.qcom,msm-cam/video4linux  u:object_r:sysfs_camera:s0
 genfscon sysfs /devices/soc/caa0000.qcom,jpeg/video4linux     u:object_r:sysfs_camera:s0
 genfscon sysfs /devices/soc/ca0c000.qcom,cci                  u:object_r:sysfs_camera:s0
 
-# Kernel memory-boost knob the camera provider writes while streaming. Under
-# /sys/kernel rather than /sys/devices, so no camera genfscon above covers it.
+# Kernel memory-boost knob the camera provider writes while streaming.
 genfscon sysfs /kernel/mm/vmscan                              u:object_r:sysfs_vmscan:s0
 
-# Subsystem and UIO device names, enumerated at startup by rmt_storage,
-# thermal-engine, wcnss_service, the sensors HAL, time_daemon, vendor_pd_mapper
-# and the per_mgr/per_proxy pair. An earlier pass labelled only the two nodes
-# that happened to appear in that boot log; this is every subsys*/name and
-# uio*/name on the board, enumerated from the device.
+# Subsystem and UIO device names, enumerated at startup by rmt_storage, thermal-en.
 genfscon sysfs /devices/soc/0.qcom,rmtfs_sharedmem/uio/uio0   u:object_r:sysfs_subsys:s0
 genfscon sysfs /devices/soc/780000.qcom,msm-core/uio/uio1     u:object_r:sysfs_subsys:s0
 genfscon sysfs /devices/soc/cce0000.qcom,venus/subsys0        u:object_r:sysfs_subsys:s0
@@ -26,26 +16,19 @@ genfscon sysfs /devices/soc/15700000.qcom,lpass/subsys2       u:object_r:sysfs_s
 genfscon sysfs /devices/soc/1a300000.qcom,turing/subsys3      u:object_r:sysfs_subsys:s0
 genfscon sysfs /devices/soc/4080000.qcom,mss/subsys4          u:object_r:sysfs_subsys:s0
 
-# Samsung sensor nodes, e.g. /sys/devices/virtual/sensors/grip_sensor/name,
-# plus the input device the sensors HAL enumerates alongside them.
+# Samsung sensor nodes, e.g.
 genfscon sysfs /devices/virtual/sensors                       u:object_r:sysfs_sensors:s0
-# The sensors HAL walks every input device reading its name, so label the
-# whole directory rather than chasing individual input numbers - input1 is
-# meta_event, input3 is grip_sensor, and more appear as drivers load. Nothing
-# else on this board reads /sys/devices/virtual/input.
+# The sensors HAL walks every input device reading its name, so label the whole di.
 genfscon sysfs /devices/virtual/input                         u:object_r:sysfs_sensors:s0
 
 # Samsung wake-on-volume-key toggle, written by the qcom init shell.
 genfscon sysfs /power/volkey_wakeup                           u:object_r:sysfs_volkey:s0
 
-# SPMI/PMIC tree, walked by hvdcp. The RTC sits underneath it, so it needs the
-# longer prefix to win - genfscon resolves by longest match.
+# SPMI/PMIC tree, walked by hvdcp.
 genfscon sysfs /devices/soc/800f000.qcom,spmi                 u:object_r:sysfs_spmi:s0
-genfscon sysfs /devices/soc/800f000.qcom,spmi/spmi-0/spmi0-00/800f000.qcom,spmi:qcom,pm660@0:qcom,pm660_rtc/rtc u:object_r:sysfs_rtc:s0
+# The pm660_rtc entry that used to live here is now provided upstream, by device/q.
 
-# Wi-Fi bring-up nodes, written by init and read back by macloader. Declared in
-# vendor policy because macloader is a vendor domain, so the genfscon has to
-# live here beside the type rather than in plat_private.
+# Wi-Fi bring-up nodes, written by init and read back by macloader.
 genfscon sysfs /kernel/boot_wlan                              u:object_r:sysfs_wlan_boot:s0
 genfscon sysfs /wifi                                          u:object_r:sysfs_wlan_boot:s0
 
