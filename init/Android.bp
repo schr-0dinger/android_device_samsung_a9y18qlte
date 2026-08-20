@@ -18,8 +18,11 @@ cc_library_static {
     name: "libinit_a9y18qlte",
     recovery_available: true,
     srcs: ["init_a9y18qlte.cpp"],
+// libbase moved out of system/core to system/libbase in Android 12, so the old "sy.
+    header_libs: [
+        "libbase_headers",
+    ],
     include_dirs: [
-        "system/core/base/include",
-        "system/core/init"
-    ]
+        "system/core/init",
+    ],
 }
