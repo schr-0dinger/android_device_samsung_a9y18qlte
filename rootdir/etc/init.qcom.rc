@@ -1160,7 +1160,7 @@ service esepmdaemon /system/vendor/bin/esepmdaemon
 
 on charger
     setprop persist.sys.usb.config mass_storage
-    load_system_props
+    # load_system_props: removed in Android 12
     start qcom-post-boot
 
 #add poweroffhandler
