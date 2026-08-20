@@ -149,3 +149,35 @@ on property:persist.sys.storage_preload=1
 
 on property:persist.sys.storage_preload=0
     start umount_service
+
+# ============================================================================
+# A12 BRING-UP SCAFFOLDING - remove both services once the port boots.
+#
+# There is no adb at the Samsung logo, so the reason vendor services exit with
+# status 1 (keymaster, sec_wsm, proca, ipacm) is invisible: linker and dlopen
+# errors go to logcat, never to the kernel log that /proc/reset_klog preserves.
+#
+# /cache is mounted early with `wait` in fstab.qcom and is not encrypted, so a
+# log written there survives the failed boot and can be read from recovery.
+# ============================================================================
+
+service bringup_logcat /system/bin/logcat -b all -v threadtime -f /cache/bootlog.txt -r 2048 -n 4
+    class core
+    user root
+    group root log readproc
+    disabled
+    oneshot
+
+# Watchdog: if boot has not completed, hand the device back to recovery rather
+# than leaving it on the logo.  Reaching recovery by buttons is unreliable on
+# this handset, and `reboot recovery` writes the BCB the bootloader reads, which
+# is the same mechanism `adb reboot recovery` uses.
+service bringup_watchdog /system/bin/sh -c "sleep 180; if [ \"$(getprop sys.boot_completed)\" != 1 ]; then sync; reboot recovery; fi"
+    class core
+    user root
+    disabled
+    oneshot
+
+on post-fs
+    start bringup_logcat
+    start bringup_watchdog

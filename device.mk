@@ -110,6 +110,11 @@ PRODUCT_PACKAGES += \
     vendor.qti.hardware.btconfigstore@1.0 \
     vendor.qti.hardware.btconfigstore@1.0.vendor
 
+# VNDK compatibility for the Android 10 vendor blobs.
+PRODUCT_PACKAGES += \
+    libhwbinder.vendor \
+    libhidltransport.vendor
+
 # Camera
 PRODUCT_PACKAGES += \
     Snap
