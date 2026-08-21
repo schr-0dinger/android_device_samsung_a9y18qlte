@@ -41,6 +41,11 @@ PRODUCT_AAPT_PREBUILT_DPI := xxxhdpi xxhdpi xhdpi hdpi
 PRODUCT_PACKAGES += \
     AntHalService
 
+# Health: the Samsung service needs a libutils symbol A12 dropped, so use the
+# generic AOSP one.  @2.1::IHealth extends @2.0, so existing clients are served.
+PRODUCT_PACKAGES += \
+    android.hardware.health@2.1-service
+
 # Audio
 # The audio@X.0-impl libraries and the service are AOSP, not Samsung.  The A10
 # copies we used to ship abort against A12's HidlUtils, so build them here.
