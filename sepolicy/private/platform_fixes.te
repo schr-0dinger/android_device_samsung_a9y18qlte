@@ -44,7 +44,7 @@ get_prop(connfwexe, hwservicemanager_prop)
 allow connfwexe multiclientd:unix_stream_socket connectto;
 allow hwservicemanager connfwexe:binder transfer;
 
-# Samsung system app <-> IMS The Samsung IMS settings app talks to imsd over /dev/.
+# Samsung IMS settings app talks to imsd over /dev/socket/imsd.
 allow system_app samsung_imsd:unix_stream_socket connectto;
 allow system_app multiclientd:unix_stream_socket connectto;
 allow system_app imsd_socket:sock_file write;
@@ -52,11 +52,10 @@ allow system_app ims_log_data_file:dir create_dir_perms;
 allow system_app ims_log_data_file:file create_file_perms;
 allow samsung_imsd ims_log_data_file:dir create_dir_perms;
 allow samsung_imsd ims_log_data_file:file create_file_perms;
-get_prop(system_app, net_dns_prop)
 allow system_app proc_net:file r_file_perms;      # /proc/<pid>/net/if_inet6
 
 
-# ############################################################################# Denied on purpose.
+# Denied on purpose: tried, rejected by a neverallow, left denied.
 
 # --- from the enforcing trial ------------------------------------------------
 allow platform_app bluetooth_data_file:dir getattr;
