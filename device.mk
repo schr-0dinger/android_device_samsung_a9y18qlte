@@ -125,9 +125,14 @@ PRODUCT_PACKAGES += \
     android.hardware.drm@1.1.vendor \
     android.hardware.health@2.0.vendor \
     android.hardware.light@2.0.vendor \
+    android.hardware.drm@1.2.vendor \
     android.hardware.radio@1.2.vendor \
+    android.hardware.radio@1.3.vendor \
+    android.hardware.soundtrigger@2.2.vendor \
     android.hardware.usb@1.0.vendor \
-    android.hardware.vibrator@1.0.vendor
+    android.hardware.usb@1.1.vendor \
+    android.hardware.vibrator@1.0.vendor \
+    android.hardware.vibrator@1.1.vendor
 
 # Camera
 PRODUCT_PACKAGES += \

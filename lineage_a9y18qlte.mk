@@ -23,6 +23,11 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_o_mr1.mk
 
 TARGET_BOOT_ANIMATION_RES := 1080
 
+# BRING-UP: adb with no authorisation prompt, reachable before the UI comes up.
+# Must be set before the inherit below, which is where Lineage reads it.
+# Remove this with androidboot.selinux=permissive - it accepts any host.
+WITH_ADB_INSECURE := true
+
 # Inherit some common Lineage stuff
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
