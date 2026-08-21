@@ -154,6 +154,11 @@ PRODUCT_COPY_FILES += \
 
 # Use Havoc-style ODM layout during bring-up.
 	
+# Keymaster: the A10 blob needs AOSP 10 keymaster class layouts, so use
+# software KeyMint until the A10 support libs are shipped to vendor.
+PRODUCT_PACKAGES += \
+    android.hardware.security.keymint-service
+
 # Keylayout
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/gpio_keys.kl:$(TARGET_COPY_OUT_SYSTEM)/usr/keylayout/gpio_keys.kl
