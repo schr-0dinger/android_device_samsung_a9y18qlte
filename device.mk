@@ -142,13 +142,14 @@ PRODUCT_PACKAGES += \
     android.hardware.radio@1.2.vendor \
     android.hardware.radio@1.3.vendor \
     android.hardware.radio@1.4.vendor \
+    android.hardware.radio.deprecated@1.0.vendor \
     android.hardware.soundtrigger@2.2.vendor \
     android.hardware.usb@1.0.vendor \
     android.hardware.usb@1.1.vendor \
     android.hardware.vibrator@1.0.vendor \
     android.hardware.vibrator@1.1.vendor \
     android.hardware.vibrator@1.2.vendor \
-    libprotobuf-cpp-lite.vendor
+    android.hardware.vibrator@1.3.vendor
 
 # Camera
 PRODUCT_PACKAGES += \
