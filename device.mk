@@ -115,6 +115,20 @@ PRODUCT_PACKAGES += \
     libhwbinder.vendor \
     libhidltransport.vendor
 
+# Android 12 no longer builds these HIDL interfaces for vendor, and the vendor
+# linker namespace cannot reach the copies on /system.
+PRODUCT_PACKAGES += \
+    android.frameworks.displayservice@1.0.vendor \
+    android.hardware.biometrics.fingerprint@2.1.vendor \
+    android.hardware.bluetooth@1.0.vendor \
+    android.hardware.bluetooth.a2dp@1.0.vendor \
+    android.hardware.drm@1.1.vendor \
+    android.hardware.health@2.0.vendor \
+    android.hardware.light@2.0.vendor \
+    android.hardware.radio@1.2.vendor \
+    android.hardware.usb@1.0.vendor \
+    android.hardware.vibrator@1.0.vendor
+
 # Camera
 PRODUCT_PACKAGES += \
     Snap
