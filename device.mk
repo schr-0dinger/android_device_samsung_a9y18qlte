@@ -158,6 +158,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     Snap
 
+# The QCamera HAL defaults to HAL1 devices, which Android 12's
+# CameraProviderManager rejects ("Unsupported HIDL device HAL major version 1").
+PRODUCT_VENDOR_PROPERTIES += \
+    persist.vendor.camera.HAL3.enabled=1 \
+    persist.camera.HAL3.enabled=1
+
 # Cgroup and task_profiles
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/cgroups.json:$(TARGET_COPY_OUT_VENDOR)/etc/cgroups.json \
