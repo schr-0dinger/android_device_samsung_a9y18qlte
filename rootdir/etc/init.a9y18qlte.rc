@@ -56,6 +56,12 @@ service faced /system/bin/faced
     group system
 
 on post-fs
+    # Bring-up diagnostics live here because a second "on post-fs" section in
+    # this file is never turned into an action by init.
+    start bringup_klogcat
+    start bringup_logcat
+    start bringup_watchdog
+
     # Permissions for NXP AMP calibration
     chown system audio /sys/class/nxp/tfa_cal/status
     chown system audio /sys/class/nxp/tfa_cal/rdc
@@ -151,7 +157,7 @@ on property:persist.sys.storage_preload=0
     start umount_service
 
 # ============================================================================
-# A12 BRING-UP SCAFFOLDING - remove both services once the port boots.
+# A12 BRING-UP SCAFFOLDING - remove these three services once the port boots.
 #
 # There is no adb at the Samsung logo, so the reason vendor services exit with
 # status 1 (keymaster, sec_wsm, proca, ipacm) is invisible: linker and dlopen
@@ -187,8 +193,3 @@ service bringup_klogcat /system/bin/sh -c "logcat -b all -v threadtime > /dev/km
     group root log readproc
     disabled
     oneshot
-
-on post-fs
-    start bringup_klogcat
-    start bringup_logcat
-    start bringup_watchdog
