@@ -52,9 +52,7 @@ vendor.sec.rild.libpath2=/vendor/lib64/libsec-ril-dsds.so
 #persist.dbg.vt_avail_ovr=1
 
 # Debugging
-# adb now requires the host key to be authorised on the device. Takes effect on
-# the next full build; the first adb connection after flashing will prompt on
-# the handset before it will talk to a new machine.
-ro.adb.secure=1
+# ro.adb.secure is left to WITH_ADB_INSECURE in lineage_a9y18qlte.mk; setting it
+# here too makes post_process_props fail on the duplicate.
 persist.service.adb.enable=1
 persist.sys.usb.config=adb
