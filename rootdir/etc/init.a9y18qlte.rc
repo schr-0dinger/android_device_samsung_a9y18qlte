@@ -178,6 +178,17 @@ service bringup_watchdog /system/bin/sh -c "sleep 180; if [ \"$(getprop sys.boot
     disabled
     oneshot
 
+# Mirror logcat into the kernel ring buffer.  /proc/reset_klog keeps the first
+# bytes of the previous boot and survives a partition wipe, so this is the only
+# diagnostic that outlives a stuck logo when /cache is unavailable.
+service bringup_klogcat /system/bin/sh -c "logcat -b all -v threadtime > /dev/kmsg"
+    class core
+    user root
+    group root log readproc
+    disabled
+    oneshot
+
 on post-fs
+    start bringup_klogcat
     start bringup_logcat
     start bringup_watchdog
