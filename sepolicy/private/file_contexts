@@ -1,9 +1,12 @@
-# This is a system-as-root device, so the build places file_contexts.bin in the ro.
+# This is a system-as-root device, so the build places file_contexts.bin in the
+# root of the system image.
 /file_contexts\.bin                u:object_r:rootfs:s0
 
 /bt_firmware(/.*)?                 u:object_r:bt_firmware_file:s0
 /firmware(/.*)?                    u:object_r:firmware_file:s0
-# /dsp is labelled upstream as adsprpcd_file (device/qcom/sepolicy-legacy-um/legac.
+# /dsp is labelled upstream as adsprpcd_file
+# (device/qcom/sepolicy-legacy-um/legacy/vendor/common/file_contexts:619), which
+# is the specific type the ADSP RPC daemon expects.
 /omr(/.*)?                         u:object_r:vendor_file:s0
 /persist(/.*)?                     u:object_r:persist_file:s0
 # /efs/wifi labels moved to sepolicy/vendor/file_contexts with the type.
@@ -13,7 +16,9 @@
 /vendor/bin/hw/android\.hardware\.keymaster@3\.0-service u:object_r:hal_keymaster_default_exec:s0
 /vendor/bin/hw/vendor\.samsung\.hardware\.biometrics\.fingerprint@3\.0-service u:object_r:hal_fingerprint_default_exec:s0
 
-# Samsung ships these HALs under names the stock file_contexts regexes do not matc.
+# Samsung ships these HALs under names the stock file_contexts regexes do not
+# match - the AOSP patterns expect android.hardware.<iface>@<ver>-service, not a
+# vendor prefix or a .samsung/.wahoo suffix.
 /vendor/bin/hw/vendor\.samsung\.hardware\.camera\.provider@3\.0-service u:object_r:hal_camera_default_exec:s0
 /vendor/bin/hw/nxp\.android\.hardware\.nfc@1\.1-service u:object_r:hal_nfc_default_exec:s0
 /vendor/bin/hw/android\.hardware\.usb@1\.1-service\.wahoo u:object_r:hal_usb_default_exec:s0

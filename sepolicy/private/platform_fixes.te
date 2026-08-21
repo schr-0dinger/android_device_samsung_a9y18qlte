@@ -9,7 +9,8 @@ allow init efs_file:dir mounton;                  # mounts /efs
 # FRP / persistent partition /dev/block/sda12, by-name "persistent", is the factor.
 allow system_server frp_block_device:blk_file rw_file_perms;
 allow system_server shell:unix_stream_socket getopt;
-# system_server's rtc0/hctosys read is granted in sepolicy/vendor: the RTC sits un.
+# system_server's rtc0/hctosys read is granted in sepolicy/vendor: the RTC sits
+# under the SPMI tree and its genfscon has to live beside that one.
 
 # misc partition Nothing needed here on A12.
 
@@ -32,7 +33,9 @@ allow hwservicemanager multiclientd:binder transfer;
 
 # connfwexe Samsung's connectivity daemon.
 allow connfwexe tcpdump_socket_file:sock_file { create unlink };
-# A file_contexts entry alone is not enough: a newly created file inherits its par.
+# A file_contexts entry alone is not enough: a newly created file inherits its
+# parent directory type unless a type_transition says otherwise, so connfwexe
+# was still creating the socket as system_data_file.
 type_transition connfwexe system_data_file:sock_file tcpdump_socket_file ".tcpdump_socket";
 allow connfwexe system_data_file:dir { write add_name remove_name };
 get_prop(connfwexe, hwservicemanager_prop)

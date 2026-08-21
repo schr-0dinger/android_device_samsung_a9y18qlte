@@ -22,7 +22,7 @@ DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay \
     $(LOCAL_PATH)/overlay-lineage
 
-# Dalvik heap The tree previously inherited no dalvik-heap config at all, so the d.
+# Dalvik heap: without this ART falls back to a ~16MB growth limit.
 $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
 ENABLE_VENDOR_RIL_SERVICE := true

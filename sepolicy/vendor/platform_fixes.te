@@ -1,4 +1,5 @@
-# Board-wide gaps found by sweeping all 93 denial groups at once rather than fixin.
+# Board-wide gaps found by sweeping all 93 denial groups at once rather than
+# fixing them one report at a time.
 
 # sysfs subsystem and UIO names Ten different domains enumerate these two nodes at.
 type sysfs_subsys, sysfs_type, fs_type;
@@ -17,7 +18,8 @@ allow hvdcp sysfs_spmi:dir r_dir_perms;
 allow hvdcp sysfs_spmi:file r_file_perms;
 allow hvdcp sysfs_batteryinfo:dir search;
 
-# The PMIC RTC hangs off that same SPMI tree, so its genfscon has to be more speci.
+# The PMIC RTC hangs off that same SPMI tree, so its genfscon has to be more
+# specific than the one above or the broader prefix swallows it.
 allow system_server sysfs_rtc:dir search;
 allow system_server sysfs_rtc:file r_file_perms;
 
@@ -81,7 +83,8 @@ type modem_efs_block_device, dev_type;   # sda1  modemst1
 allow rmt_storage modem_efs_block_device:blk_file rw_file_perms;
 allow tee ssd_block_device:blk_file rw_file_perms;
 
-# persist_file is a qcom vendor type, so every domain that follows the /persist sy.
+# persist_file is a qcom vendor type, so every domain that follows the /persist
+# symlink needs its rule here rather than in plat policy.
 allow tee persist_file:lnk_file r_file_perms;
 allow vendor_init persist_file:lnk_file r_file_perms;
 
@@ -117,7 +120,8 @@ allow rmt_storage modem_efs_block_device:blk_file rw_file_perms;
 allow macloader self:udp_socket { create ioctl };
 allow macloader self:capability { net_admin sys_module };
 
-# connfwexe's rules live in sepolicy/private: it is a plat domain (its binary is o.
+# connfwexe's rules live in sepolicy/private: it is a plat domain (its binary is
+# on /system), so vendor policy cannot name it.
 
 # vold Writes the uevent node to re-trigger UFS enumeration.
 allow vold sysfs_ufs:file write;
@@ -136,10 +140,13 @@ allow tee gatekeeper_data_file:file create_file_perms;
 # from the enforcing trial The health HAL reads /efs/Battery but nothing granted s.
 allow hal_health_default efs_file:dir search;
 
-# The sensor daemon reads its calibration through /persist, which on this device i.
+# The sensor daemon reads its calibration through /persist, which on this device
+# is reached via symlinks, and walks /efs the same way the health HAL does.
 allow sensors efs_file:dir search;
 allow sensors persist_file:lnk_file r_file_perms;
 
-# Same two paths again for the HIDL sensors HAL, which is a separate domain from t.
+# Same two paths again for the HIDL sensors HAL, which is a separate domain from
+# the sensors daemon, and for macloader - it reads the wifi MAC out of /efs/wifi
+# and cannot get there without search on the /efs root.
 allow hal_sensors_default persist_file:lnk_file r_file_perms;
 allow macloader efs_file:dir search;

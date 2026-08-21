@@ -54,7 +54,7 @@ USE_XML_AUDIO_POLICY_CONF := 1
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 
-# Platform APNs AOSP's apns-conf.xml has no type="ims" entry for BSNL (mcc 404), o.
+# Platform APNs: AOSP has no type="ims" entry for BSNL (mcc 404).
 CUSTOM_APNS_FILE := $(DEVICE_PATH)/configs/custom_apns.xml
 
 BOARD_VENDOR := samsung
@@ -94,7 +94,8 @@ BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 # Unthrottle /dev/kmsg so bringup_klogcat is not rate-limited.
 BOARD_KERNEL_CMDLINE += printk.devkmsg=on
 
-# On the A10 policy, reaching enforcing needed four classes of fix, all of them in.
+# Reaching enforcing on A10 needed four classes of fix, all invisible while
+# permissive because a logged denial still allows the access.
 BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) --second_offset $(BOARD_KERNEL_SECOND_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE)
@@ -181,7 +182,9 @@ TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
 PRODUCT_FULL_TREBLE_OVERRIDE := true
 BOARD_SHIPPING_API_LEVEL := 26
-# Android 12 removed VNDK-Lite ("BOARD_VNDK_RUNTIME_DISABLE is obsolete"), which i.
+# Android 12 removed VNDK-Lite ("BOARD_VNDK_RUNTIME_DISABLE is obsolete"), which
+# is what this device relied on: it reports ro.vndk.lite=true because Samsung
+# shipped a relaxed vendor interface rather than full Treble.
 BOARD_VNDK_VERSION := current
 
 # Vendor / ODM

@@ -1,4 +1,5 @@
-# Types for the Samsung and Trustonic HIDL interfaces labelled in sepolicy/vendor/.
+# Types for the Samsung and Trustonic HIDL interfaces labelled in
+# sepolicy/vendor/hwservice_contexts.
 
 type samsung_audio_hwservice, hwservice_manager_type;
 type samsung_camera_hwservice, hwservice_manager_type;
@@ -43,5 +44,6 @@ allow multiclientd samsung_radio_hwservice:hwservice_manager find;
 
 # The LineageOS framework probes the touch HAL from system_server on boot.
 
-# The Samsung camera provider queries the framework display interface for panel ge.
+# The Samsung camera provider queries the framework display interface for panel
+# geometry before configuring its streams.
 allow hal_camera_default fwk_display_hwservice:hwservice_manager find;

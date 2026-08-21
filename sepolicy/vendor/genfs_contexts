@@ -7,7 +7,9 @@ genfscon sysfs /devices/soc/ca0c000.qcom,cci                  u:object_r:sysfs_c
 # Kernel memory-boost knob the camera provider writes while streaming.
 genfscon sysfs /kernel/mm/vmscan                              u:object_r:sysfs_vmscan:s0
 
-# Subsystem and UIO device names, enumerated at startup by rmt_storage, thermal-en.
+# Subsystem and UIO device names, enumerated at startup by rmt_storage,
+# thermal-engine, wcnss_service, the sensors HAL, time_daemon, vendor_pd_mapper
+# and the per_mgr/per_proxy pair.
 genfscon sysfs /devices/soc/0.qcom,rmtfs_sharedmem/uio/uio0   u:object_r:sysfs_subsys:s0
 genfscon sysfs /devices/soc/780000.qcom,msm-core/uio/uio1     u:object_r:sysfs_subsys:s0
 genfscon sysfs /devices/soc/cce0000.qcom,venus/subsys0        u:object_r:sysfs_subsys:s0
@@ -18,7 +20,9 @@ genfscon sysfs /devices/soc/4080000.qcom,mss/subsys4          u:object_r:sysfs_s
 
 # Samsung sensor nodes, e.g.
 genfscon sysfs /devices/virtual/sensors                       u:object_r:sysfs_sensors:s0
-# The sensors HAL walks every input device reading its name, so label the whole di.
+# The sensors HAL walks every input device reading its name, so label the whole
+# directory rather than chasing individual input numbers - input1 is meta_event,
+# input3 is grip_sensor, and more appear as drivers load.
 genfscon sysfs /devices/virtual/input                         u:object_r:sysfs_sensors:s0
 
 # Samsung wake-on-volume-key toggle, written by the qcom init shell.
@@ -26,7 +30,8 @@ genfscon sysfs /power/volkey_wakeup                           u:object_r:sysfs_v
 
 # SPMI/PMIC tree, walked by hvdcp.
 genfscon sysfs /devices/soc/800f000.qcom,spmi                 u:object_r:sysfs_spmi:s0
-# The pm660_rtc entry that used to live here is now provided upstream, by device/q.
+# The pm660_rtc entry that used to live here is now provided upstream, by
+# device/qcom/sepolicy-legacy-um/legacy/vendor/sdm660/genfs_contexts:30.
 
 # Wi-Fi bring-up nodes, written by init and read back by macloader.
 genfscon sysfs /kernel/boot_wlan                              u:object_r:sysfs_wlan_boot:s0
