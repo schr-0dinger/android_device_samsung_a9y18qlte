@@ -44,6 +44,7 @@ PRODUCT_PACKAGES += \
 # Health: the Samsung service needs a libutils symbol A12 dropped, so use the
 # generic AOSP one.  @2.1::IHealth extends @2.0, so existing clients are served.
 PRODUCT_PACKAGES += \
+    android.hardware.health@2.1-impl \
     android.hardware.health@2.1-service
 
 # Audio
