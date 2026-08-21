@@ -42,6 +42,13 @@ PRODUCT_PACKAGES += \
     AntHalService
 
 # Audio
+# The audio@X.0-impl libraries and the service are AOSP, not Samsung.  The A10
+# copies we used to ship abort against A12's HidlUtils, so build them here.
+PRODUCT_PACKAGES += \
+    android.hardware.audio@5.0-impl \
+    android.hardware.audio.effect@5.0-impl \
+    android.hardware.audio.service
+
 PRODUCT_PACKAGES += \
     audio.a2dp.default \
     audio_amplifier.sdm660 \
