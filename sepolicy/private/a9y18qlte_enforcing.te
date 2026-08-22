@@ -1,0 +1,16 @@
+# Core-domain denials from the same permissive boot as the vendor file.
+
+allow init proc:file setattr;
+allow init vendor_toolbox_exec:file execute_no_trans;
+
+allow mediacodec default_prop:file { getattr open read };
+allow mediaserver package_native_service:service_manager find;
+
+allow smdexe vendor_default_prop:file { getattr open read };
+allow multiclientd hwservicemanager:binder call;
+
+# The Samsung connectivity daemon keeps its socket at the root of /data.
+allow connfwexe system_data_root_file:dir { add_name remove_name write };
+allow connfwexe system_data_root_file:sock_file { create unlink };
+
+allow shell odsign_prop:file { getattr open read };
