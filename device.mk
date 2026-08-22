@@ -252,7 +252,9 @@ PRODUCT_PACKAGES += \
 
 # RIL
 # libsec-ril imports strdup8to16, which libutils dropped after Android 10.
-PRODUCT_PACKAGES += libsecril_shim
+PRODUCT_PACKAGES += \
+    libsecril_shim \
+    libsecril_shim_system
 
 # Net
 PRODUCT_PACKAGES += \

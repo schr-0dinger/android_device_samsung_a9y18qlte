@@ -4,12 +4,23 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-cc_library_shared {
-    name: "libsecril_shim",
+cc_defaults {
+    name: "secril_shim_defaults",
     srcs: ["secril_shim.cpp"],
     shared_libs: [
         "libutils",
     ],
-    vendor: true,
     compile_multilib: "64",
+}
+
+cc_library_shared {
+    name: "libsecril_shim",
+    defaults: ["secril_shim_defaults"],
+    vendor: true,
+}
+
+// multiclientd lives in /system, so it cannot load the vendor copy.
+cc_library_shared {
+    name: "libsecril_shim_system",
+    defaults: ["secril_shim_defaults"],
 }
