@@ -164,10 +164,6 @@ PRODUCT_VENDOR_PROPERTIES += \
     persist.vendor.camera.HAL3.enabled=1 \
     persist.camera.HAL3.enabled=1
 
-# The VFE maps two pixel streams; Android 12 asks for three by adding a
-# 640x480 analysis stream, and isp_util_map_streams then fails the channel.
-PRODUCT_VENDOR_PROPERTIES += persist.camera.isp.analysis_en=0
-
 # Cgroup and task_profiles
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/cgroups.json:$(TARGET_COPY_OUT_VENDOR)/etc/cgroups.json \
