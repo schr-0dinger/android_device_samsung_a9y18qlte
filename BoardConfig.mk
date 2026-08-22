@@ -91,8 +91,6 @@ BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
 BOARD_KERNEL_CMDLINE := console=ram androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 sched_enable_hmp=1 sched_enable_power_aware=1 service_locator.enable=1 swiotlb=1 firmware_class.path=/vendor/firmware_mnt/image
 # PERMISSIVE FOR A12 BRING-UP - remove this line once the port boots.
 BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
-# Unthrottle /dev/kmsg so bringup_klogcat is not rate-limited.
-BOARD_KERNEL_CMDLINE += printk.devkmsg=on
 
 # Reaching enforcing on A10 needed four classes of fix, all invisible while
 # permissive because a logged denial still allows the access.
