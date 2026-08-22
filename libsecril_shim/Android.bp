@@ -1,0 +1,15 @@
+//
+// Copyright (C) 2026 The LineageOS Project
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+cc_library_shared {
+    name: "libsecril_shim",
+    srcs: ["secril_shim.cpp"],
+    shared_libs: [
+        "libutils",
+    ],
+    vendor: true,
+    compile_multilib: "64",
+}

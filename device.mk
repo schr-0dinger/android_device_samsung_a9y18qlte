@@ -241,6 +241,10 @@ PRODUCT_PACKAGES += \
     android.hardware.memtrack@1.0-service \
     memtrack.sdm660
 
+# RIL
+# libsec-ril imports strdup8to16, which libutils dropped after Android 10.
+PRODUCT_PACKAGES += libsecril_shim
+
 # Net
 PRODUCT_PACKAGES += \
     netutils-wrapper-1.0
