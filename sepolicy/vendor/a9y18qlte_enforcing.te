@@ -23,12 +23,17 @@ allow hal_camera_default default_prop:file { getattr open read };
 allow hal_camera_default persist_debug_prop:file { getattr open read };
 allow hal_camera_default radio_prop:file { getattr open read };
 allow hal_camera_default system_prop:file { getattr open read };
+vendor_internal_prop(samsung_camera_prop)
+set_prop(hal_camera_default, samsung_camera_prop)
 
 allow hal_graphics_composer_default sysfs_camera:dir search;
 allow hal_nfc_default system_file:file { getattr open read };
 allow hal_power_default sysfs_sectouch:dir search;
 
 allow qti_init_shell default_prop:file { getattr open };
+# init.qcom.crashdata.sh is labelled qti_init_shell_exec (see file_contexts)
+# and shells out to toybox.
+allow qti_init_shell vendor_toolbox_exec:file execute_no_trans;
 
 allow rild default_prop:file { getattr open read };
 allow rild system_prop:file { getattr open read };
@@ -55,3 +60,5 @@ allow init-qcom-sensors-sh sensors_persist_file:file { getattr setattr };
 allow init-qcom-sensors-sh vendor_sensors_prop:property_service set;
 allow init-qcom-sensors-sh property_socket:sock_file write;
 allow init-qcom-sensors-sh init:unix_stream_socket connectto;
+# chmod/chown on the sensor registry files, which it does not own.
+allow init-qcom-sensors-sh self:capability dac_override;

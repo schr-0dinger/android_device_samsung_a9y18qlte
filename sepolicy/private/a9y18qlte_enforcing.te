@@ -1,7 +1,6 @@
 # Core-domain denials from the same permissive boot as the vendor file.
 
 allow init proc:file setattr;
-allow init vendor_toolbox_exec:file execute_no_trans;
 
 allow mediacodec default_prop:file { getattr open read };
 allow mediaserver package_native_service:service_manager find;

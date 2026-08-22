@@ -8,6 +8,7 @@
 # qcom labels every other init.*.sh as qti_init_shell_exec but omits this one,
 # which is why it showed up as "qti_init_shell -> vendor_file : entrypoint".
 /vendor/bin/init\.qti\.can\.sh                                      u:object_r:qti_init_shell_exec:s0
+/vendor/bin/init\.qcom\.crashdata\.sh                                 u:object_r:qti_init_shell_exec:s0
 
 # Oneshot services - see samsung_vendor_daemons.te.
 /vendor/bin/hw/macloader                                            u:object_r:macloader_exec:s0

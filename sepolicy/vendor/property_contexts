@@ -22,3 +22,9 @@ vendor.sys.qseecomd.enable    u:object_r:vendor_qseecomd_prop:s0
 # on every boot.
 vendor.bluetooth_fw_ver          u:object_r:samsung_bluetooth_prop:s0
 persist.ril.interfaceconf.failed u:object_r:samsung_ril_prop:s0
+
+# The camera HAL writes a debug logfile path and a sensor match id. Neither
+# has a qcom entry, so both fell through to default_prop/system_prop, which
+# hal_camera_default may not set.
+persist.camera.debug.logfile  u:object_r:samsung_camera_prop:s0
+service.camera.match.id       u:object_r:samsung_camera_prop:s0
