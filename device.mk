@@ -164,6 +164,19 @@ PRODUCT_VENDOR_PROPERTIES += \
     persist.vendor.camera.HAL3.enabled=1 \
     persist.camera.HAL3.enabled=1
 
+# Samsung's provider hands the framework a session it cannot drive:
+# SehCamDev fails to cast ICameraDeviceCallback and every capture
+# request comes back INVALID_OPERATION. Use the AOSP legacy provider,
+# which loads camera.sdm660.so through libhardware. 32-bit: the HAL
+# only ships as vendor/lib/hw/camera.sdm660.so.
+PRODUCT_PACKAGES += \
+    android.hardware.camera.provider@2.4-impl \
+    android.hardware.camera.provider@2.4-service \
+    camera.device@1.0-impl \
+    camera.device@3.2-impl \
+    camera.device@3.3-impl \
+    camera.device@3.4-impl
+
 # Cgroup and task_profiles
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/cgroups.json:$(TARGET_COPY_OUT_VENDOR)/etc/cgroups.json \
