@@ -160,9 +160,11 @@ PRODUCT_PACKAGES += \
 
 # The QCamera HAL defaults to HAL1 devices, which Android 12's
 # CameraProviderManager rejects ("Unsupported HIDL device HAL major version 1").
+# The name the blob actually reads is persist.camera.HAL3.enabled, which is not
+# in the vendor namespace and so is dropped from a vendor prop file; it lives in
+# system.prop instead.
 PRODUCT_VENDOR_PROPERTIES += \
-    persist.vendor.camera.HAL3.enabled=1 \
-    persist.camera.HAL3.enabled=1
+    persist.vendor.camera.HAL3.enabled=1
 
 # Samsung's provider hands the framework a session it cannot drive:
 # SehCamDev fails to cast ICameraDeviceCallback and every capture

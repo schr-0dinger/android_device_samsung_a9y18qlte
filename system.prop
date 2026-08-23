@@ -1,3 +1,8 @@
+# Camera
+# Without this the blob exposes device@1.0 and CameraProviderManager rejects
+# every camera. Not a vendor-namespace name, so it cannot live in vendor.prop.
+persist.camera.HAL3.enabled=1
+
 # Audio
 ro.bluetooth.a2dp_offload.supported=false
 persist.bluetooth.a2dp_offload.disabled=true

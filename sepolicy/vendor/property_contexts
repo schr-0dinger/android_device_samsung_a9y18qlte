@@ -28,3 +28,9 @@ persist.ril.interfaceconf.failed u:object_r:samsung_ril_prop:s0
 # hal_camera_default may not set.
 persist.camera.debug.logfile  u:object_r:samsung_camera_prop:s0
 service.camera.match.id       u:object_r:samsung_camera_prop:s0
+
+# The blob reads this to decide whether to expose HAL3 devices. Unlabelled it
+# lands in default_prop, which a vendor domain may not read, so under enforcing
+# the HAL never sees it, falls back to device@1.0 and CameraProviderManager
+# rejects every camera ("Unsupported HIDL device HAL major version 1").
+persist.camera.HAL3.enabled   u:object_r:samsung_camera_prop:s0
