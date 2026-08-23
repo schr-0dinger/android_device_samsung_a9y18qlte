@@ -1,5 +1,24 @@
 # Denials collected from a full boot plus exercising camera, settings, dialer,
 # messaging and wifi with the policy permissive.
+#
+# A permissive boot logs everything a domain attempts, including things AOSP
+# neverallows. Those are not granted here - the denial is the correct outcome:
+#
+#   hal_audio_default default_android_hwservice  - domain.te forbids a vendor
+#     domain finding a framework hwservice.
+#   hal_nfc_default system_file:file             - domain.te forbids a vendor
+#     domain reading /system.
+#   rild radio_core_data_file                    - domain.te forbids opening
+#     another domain's data files.
+#   vendor_init misc_logd_file                   - logpersist.te forbids
+#     touching logd's files; vendor_init does not get to prune them.
+#   vendor_init system_data_file:dir,
+#   vendor_init tombstone_data_file:dir,
+#   vendor_init vendor_seemp_data_file:dir       - domain.te forbids vendor_init
+#     walking core data directories.
+#   init-qcom-sensors-sh self:capability dac_override - domain.te forbids
+#     dac_override. The script chmods sensor registry files it does not own;
+#     the right fix is ownership in init, not the capability.
 
 allow factory_adsp diag_device:chr_file { ioctl open read write };
 allow factory_adsp sensors_persist_file:dir getattr;
@@ -8,7 +27,6 @@ allow factory_adsp sensors_persist_file:file { open read };
 allow hal_audio_default audio_prop:file { getattr open read };
 allow hal_audio_default default_prop:file { getattr open };
 allow hal_audio_default radio_prop:file { getattr open read };
-allow hal_audio_default default_android_hwservice:hwservice_manager find;
 # libaudioalsa reads the IMEI to pick a tuning table.
 allow hal_audio_default imei_efs_file:dir search;
 allow hal_audio_default imei_efs_file:file { getattr open read };
@@ -27,8 +45,11 @@ vendor_internal_prop(samsung_camera_prop)
 set_prop(hal_camera_default, samsung_camera_prop)
 
 allow hal_graphics_composer_default sysfs_camera:dir search;
-allow hal_nfc_default system_file:file { getattr open read };
 allow hal_power_default sysfs_sectouch:dir search;
+
+# mediacodec is a vendor domain (system/sepolicy/vendor/mediacodec.te), so this
+# cannot live in the system_ext private policy.
+allow mediacodec default_prop:file { getattr open read };
 
 allow qti_init_shell default_prop:file { getattr open };
 # init.qcom.crashdata.sh is labelled qti_init_shell_exec (see file_contexts)
@@ -37,8 +58,6 @@ allow qti_init_shell vendor_toolbox_exec:file execute_no_trans;
 
 allow rild default_prop:file { getattr open read };
 allow rild system_prop:file { getattr open read };
-allow rild radio_core_data_file:dir search;
-allow rild radio_core_data_file:file { open read };
 
 allow secril_config default_prop:file { getattr open read };
 allow secril_config radio_prop:file { getattr open read };
@@ -48,11 +67,6 @@ allow wcnss_service vendor_wigig_core_prop:file { getattr open read };
 allow vendor_init default_prop:file read;
 allow vendor_init init_service_status_private_prop:file read;
 allow vendor_init vts_status_prop:file read;
-allow vendor_init tombstone_data_file:dir getattr;
-allow vendor_init vendor_seemp_data_file:dir getattr;
-allow vendor_init misc_logd_file:dir { search write remove_name };
-allow vendor_init misc_logd_file:file unlink;
-allow vendor_init system_data_file:dir { ioctl open read setattr };
 
 allow init-qcom-sensors-sh sensors_device:chr_file getattr;
 allow init-qcom-sensors-sh sensors_persist_file:dir getattr;
@@ -60,5 +74,3 @@ allow init-qcom-sensors-sh sensors_persist_file:file { getattr setattr };
 allow init-qcom-sensors-sh vendor_sensors_prop:property_service set;
 allow init-qcom-sensors-sh property_socket:sock_file write;
 allow init-qcom-sensors-sh init:unix_stream_socket connectto;
-# chmod/chown on the sensor registry files, which it does not own.
-allow init-qcom-sensors-sh self:capability dac_override;
