@@ -64,6 +64,11 @@ debug.sf.hw=1
 debug.sf.latch_unsignaled=1
 debug.gralloc.enable_fb_ubwc=1
 
+# The camera HAL defaults persist.camera.video.ubwc to 1, which hands the
+# encoder UBWC buffers it reads as linear - recordings come out green with
+# tile-width banding.  0 selects linear NV12.
+persist.camera.video.ubwc=0
+
 # Telephony
 ro.telephony.default_network=10,10
 persist.radio.multisim.config=dsds
