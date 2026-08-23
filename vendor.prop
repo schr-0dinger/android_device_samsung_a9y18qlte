@@ -64,6 +64,11 @@ debug.sf.hw=1
 debug.sf.latch_unsignaled=1
 debug.gralloc.enable_fb_ubwc=1
 
+# The venus encoder gets UBWC buffers it cannot consume, so recordings come
+# out green.  Pairs with dropping V4L2_PIX_FMT_NV12_UBWC from venc_formats
+# in the kernel, which stops the encoder advertising UBWC input at all.
+vendor.video.disable.ubwc=1
+
 # Telephony
 ro.telephony.default_network=10,10
 persist.radio.multisim.config=dsds
