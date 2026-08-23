@@ -23,31 +23,16 @@ vendor.sec.rild.libpath2=/vendor/lib64/libsec-ril-dsds.so
 
 # VoLTE / VT
 #
-# ImsManager.isVolteEnabledByPlatform() requires config_device_volte_available
-# (set true in our framework overlay) AND the carrier config key
-# KEY_CARRIER_VOLTE_AVAILABLE_BOOL. AOSP's CarrierConfig ships no entry for
-# BSNL (MCC/MNC 40472) - dumpsys shows carrier_config_version_string empty and
-# carrier_volte_available_bool=false - so the check fails even though the
-# network advertises VoPS support (LteVopsSupportInfo mVopsSupport=1) and the
-# Samsung ImsService reports MmTel Voice: true.
+# isVolteEnabledByPlatform() needs config_device_volte_available (true in our
+# framework overlay) AND KEY_CARRIER_VOLTE_AVAILABLE_BOOL from CarrierConfig.
+# AOSP ships no 404xx entry so that key defaulted false; overlay vendor.xml now
+# sets it in the default carrier_config block.
 #
-# These properties short-circuit that check in ImsManager (see
-# frameworks/opt/net/ims/.../ImsManager.java, PROPERTY_DBG_VOLTE_AVAIL_OVERRIDE).
-#
-# DISABLED - do not re-enable until IMS actually registers.
-#
-# Forcing the platform flag only makes the framework *believe* VoLTE is usable;
-# it does not make Samsung's IMS stack register. dumpsys secims shows
-# "Update Feature [Registered: false]" and Samsung's own MNO config for this
-# carrier says mnoname=BSNL_IN, Voice_Domain_Preference_EUTRAN=CSVoiceOnly,
-# EnableVoLTEindicator=FALSE - i.e. the stack is configured not to do VoLTE here.
-#
-# With the override on, telephony routed calls to ImsPhoneCallTracker anyway.
-# Calls stuck in DIALING forever with no progress and no terminate, so they could
-# not even be hung up. That is worse than plain CSFB calling.
-#
-# The real fix is to make the Samsung IMS stack register (MNO voice-domain
-# settings / the samsung-ims-patches stages), not to force the platform flag.
+# The overrides below short-circuit that check in ImsManager
+# (PROPERTY_DBG_VOLTE_AVAIL_OVERRIDE). Left off deliberately: on A10/BSNL, whose
+# network reported no VoPS, forcing them routed calls to ImsPhoneCallTracker
+# while the Samsung stack was unregistered and calls stuck in DIALING with no
+# way to hang up. Only set these once dumpsys secims shows Registered: true.
 #persist.dbg.volte_avail_ovr=1
 #persist.dbg.vt_avail_ovr=1
 
