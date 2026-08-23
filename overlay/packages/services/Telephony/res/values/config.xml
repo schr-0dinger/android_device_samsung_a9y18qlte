@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Device ImsService for MMTel. ImsResolver reads this, not the A10-era
+         config_ims_package in frameworks/base, which A12 no longer defines.
+         config_ims_rcs_package is left empty: Samsung RCS is not ported. -->
+    <string name="config_ims_mmtel_package" translatable="false">com.sec.imsservice</string>
+</resources>
