@@ -66,3 +66,6 @@
 # Wi-Fi calibration data, read by macloader.
 /efs/wifi(/.*)?                                                     u:object_r:wifi_efs_file:s0
 /mnt/vendor/efs/wifi(/.*)?                                          u:object_r:wifi_efs_file:s0
+
+# LiveDisplay, which reaches the panel through mdnie and the lcd class.
+/vendor/bin/hw/vendor\.lineage\.livedisplay@2\.0-service\.samsung-qcom  u:object_r:hal_lineage_livedisplay_sysfs_exec:s0

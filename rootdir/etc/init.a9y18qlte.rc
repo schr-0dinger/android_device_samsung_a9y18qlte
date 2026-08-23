@@ -6,6 +6,16 @@ on boot
     chmod 0664 /sys/class/power_supply/sm5705-charger/charger_op_mode
     chown system radio /sys/class/power_supply/sm5705-charger/charger_op_mode
 
+# LiveDisplay tuneables, written by the livedisplay HAL as system.
+    chown system system /sys/class/lcd/panel/power_reduce
+    chmod 0660 /sys/class/lcd/panel/power_reduce
+    chown system system /sys/class/mdnie/mdnie/accessibility
+    chmod 0660 /sys/class/mdnie/mdnie/accessibility
+    chown system system /sys/class/mdnie/mdnie/mode
+    chmod 0660 /sys/class/mdnie/mdnie/mode
+    chown system system /sys/class/mdnie/mdnie/outdoor
+    chmod 0660 /sys/class/mdnie/mdnie/outdoor
+
 # Move 2 SD card
 # Disabled until matching external SD helper is added back.
 # service extSdUFSVold /system/bin/extSDCardServiceVold

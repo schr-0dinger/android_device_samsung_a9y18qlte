@@ -42,3 +42,8 @@ genfscon sysfs /devices/soc/1da4000.ufshc                     u:object_r:sysfs_u
 
 # msm_core parameters, written by init and energyawareness.
 genfscon sysfs /module/msm_core/parameters                     u:object_r:sysfs_msm_core:s0
+
+# LiveDisplay tuneables: mdnie carries the colour modes, the lcd class
+# carries power_reduce.
+genfscon sysfs /devices/virtual/mdnie                          u:object_r:sysfs_livedisplay_tuneable:s0
+genfscon sysfs /devices/virtual/lcd                            u:object_r:sysfs_livedisplay_tuneable:s0
