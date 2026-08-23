@@ -54,6 +54,14 @@ set_prop(hal_camera_default, samsung_camera_prop)
 allow hal_graphics_composer_default sysfs_camera:dir search;
 allow hal_power_default sysfs_sectouch:dir search;
 
+# LiveDisplay walks the mdnie and lcd trees it was given in genfs_contexts,
+# and keeps its calibration under /data/vendor/display.
+allow hal_lineage_livedisplay_sysfs sysfs_livedisplay_tuneable:dir search;
+allow hal_lineage_livedisplay_sysfs display_vendor_data_file:dir search;
+# genfs_contexts labels all of /devices/virtual/lcd, which the light HAL also
+# traverses for the panel, so it needs the same search.
+allow hal_light_default sysfs_livedisplay_tuneable:dir search;
+
 # init.qcom.crashdata.sh is labelled qti_init_shell_exec (see file_contexts)
 # and shells out to toybox.
 allow qti_init_shell vendor_toolbox_exec:file execute_no_trans;
