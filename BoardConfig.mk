@@ -59,6 +59,12 @@ CUSTOM_APNS_FILE := $(DEVICE_PATH)/configs/custom_apns.xml
 
 BOARD_VENDOR := samsung
 TARGET_BOARD_PLATFORM := sdm660
+
+# venc/Android.mk gates -D_UBWC_ on this list. Nothing in the LineageOS tree
+# defines it - it normally comes from device/qcom/common - so the test always
+# failed and UBWC support was compiled out of libOmxVenc, leaving
+# is_gralloc_source_ubwc hardcoded to 0.
+TARGETS_THAT_SUPPORT_UBWC := sdm660
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno512
 
 # Bootloader
@@ -95,6 +101,11 @@ BOARD_KERNEL_CMDLINE := console=ram androidboot.hardware=qcom user_debug=31 msm_
 BOARD_MKBOOTIMG_ARGS := --kernel_offset $(BOARD_KERNEL_OFFSET) --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) --second_offset $(BOARD_KERNEL_SECOND_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE)
+
+# libsec-ims imports utf8_length, which libutils dropped after Android 10. The
+# app loads it with System.loadLibrary, so LD_PRELOAD is not available and the
+# linker shim is the only way to inject the symbol.
+TARGET_LD_SHIM_LIBS := /system/lib64/libsec-ims.so|libsecims_shim.so
 
 # Kernel config
 TARGET_KERNEL_CONFIG := a9y18qlte_defconfig

@@ -1,0 +1,15 @@
+//
+// Copyright (C) 2026 The LineageOS Project
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+// libsec-ims lives in /system, so this is a system library, not a vendor one.
+cc_library_shared {
+    name: "libsecims_shim",
+    srcs: ["secims_shim.cpp"],
+    shared_libs: [
+        "libutils",
+    ],
+    compile_multilib: "64",
+}
